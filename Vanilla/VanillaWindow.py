@@ -37,7 +37,6 @@ class VanillaWindow(QMainWindow):
         copy_action = QAction('&Copy', self)
         copy_action.setShortcut('Ctrl+C')
         edit_menu.addAction(copy_action)
-        
 
     def paintEvent(self, event):
         painter = QPainter()
