@@ -26,16 +26,16 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="GameWindow.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="GameWindow.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/../../Reversi/Reversi/GameWindow.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="22">
-              <caret line="68" selection-start-line="68" selection-end-line="68" />
+            <state relative-caret-position="462">
+              <caret line="65" column="27" lean-forward="true" selection-start-line="65" selection-start-column="27" selection-end-line="65" selection-end-column="27" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="VanillaWindow.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="VanillaWindow.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/VanillaWindow.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="474">
@@ -60,8 +60,8 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/Vanilla.py" />
-        <option value="$PROJECT_DIR$/../../Reversi/Reversi/GameWindow.py" />
         <option value="$PROJECT_DIR$/VanillaWindow.py" />
+        <option value="$PROJECT_DIR$/../../Reversi/Reversi/GameWindow.py" />
       </list>
     </option>
   </component>
@@ -210,13 +210,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../../Reversi/Reversi/GameWindow.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="22">
-          <caret line="68" selection-start-line="68" selection-end-line="68" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/VanillaWindow.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="474">
@@ -224,6 +217,13 @@
           <folding>
             <element signature="e#0#58#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../Reversi/Reversi/GameWindow.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="462">
+          <caret line="65" column="27" lean-forward="true" selection-start-line="65" selection-start-column="27" selection-end-line="65" selection-end-column="27" />
         </state>
       </provider>
     </entry>
