@@ -100,3 +100,4 @@ ENV/
 
 # mypy
 .mypy_cache/
+Vanilla/.idea/workspace.xml
