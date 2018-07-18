@@ -1,12 +1,17 @@
 from PyQt5.QtWidgets import QMainWindow, QAction, QInputDialog
 from PyQt5.QtGui import QPainter, QImage
+from PyQt5.QtCore import Qt
+from Point import Point
 
 
 class VanillaWindow(QMainWindow):
 
+    SHIFT = 100
+    CANVAS_START = Point(200 + SHIFT, SHIFT)
+
     def __init__(self):
         super().__init__()
-
+        self.draw_canvas = False
         self.initUI()
 
     def initUI(self):
@@ -40,21 +45,23 @@ class VanillaWindow(QMainWindow):
         edit_menu.addAction(copy_action)
 
     def ask_size(self):
-        size, success = QInputDialog.getText(self, 'New', 'Enter Size:')
+        size, success = QInputDialog.getInt(self, 'New', 'Enter Size:')
         if success:
-            if size.isdigit():
-                print('yeah')
-                self.create_canvas(size)
-            else:
-                print('nope')
+            self.create_canvas(size, size)
 
-    def create_canvas(self, size):
-        pass
+    def create_canvas(self, width, height):
+        self.canvas_width = width
+        self.canvas_height = height
+        self.draw_canvas = True
 
     def paintEvent(self, event):
         painter = QPainter()
         painter.begin(self)
-
+        if self.draw_canvas:
+            painter.fillRect(self.CANVAS_START.x, self.CANVAS_START.y,
+                             self.width() - self.CANVAS_START.x - self.SHIFT,
+                             self.height() - self.CANVAS_START.y - self.SHIFT,
+                             Qt.white)
         painter.drawImage(0, self.menu_bar.height(), QImage('images/ToolBar.png'))
 
         painter.end()
