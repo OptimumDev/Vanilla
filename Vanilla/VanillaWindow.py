@@ -40,12 +40,13 @@ class VanillaWindow(QMainWindow):
         edit_menu.addAction(copy_action)
 
     def ask_size(self):
-        size, success = QInputDialog.getText(self, 'Create New Canvas', 'Enter Size:')
-        if success and size.isdigit():
-            print('yeah')
-            self.create_canvas(size)
-        else:
-            print('nope')
+        size, success = QInputDialog.getText(self, 'New', 'Enter Size:')
+        if success:
+            if size.isdigit():
+                print('yeah')
+                self.create_canvas(size)
+            else:
+                print('nope')
 
     def create_canvas(self, size):
         pass
