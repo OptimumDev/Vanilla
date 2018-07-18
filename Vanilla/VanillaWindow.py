@@ -1,7 +1,48 @@
-from PyQt5.QtWidgets import QMainWindow, QAction, QInputDialog
-from PyQt5.QtGui import QPainter, QImage
+from PyQt5.QtWidgets import QMainWindow, QAction, QDialog, QPushButton, QLabel
+from PyQt5.QtGui import QPainter, QImage, QFont
 from PyQt5.QtCore import Qt
 from Point import Point
+
+
+class SizeDialog(QDialog):
+
+    def __init__(self, root):
+        super().__init__()
+        self.root = root
+        self.success = False
+        self.canvas_width = 32
+        self.canvas_height = 32
+        self.initUI()
+
+    def initUI(self):
+        self.setWindowFlags(Qt.MSWindowsFixedSizeDialogHint | Qt.WindowCloseButtonHint)
+        self.resize(300, 300)
+
+        cancel_button = QPushButton('Cancel', self)
+        cancel_button.move(0, 100)
+        cancel_button.clicked.connect(self.cancel)
+
+        ok_button = QPushButton('Ok', self)
+        ok_button.move(cancel_button.width() + 10, 100)
+        ok_button.clicked.connect(self.ok)
+
+        enter_label = QLabel('Please Enter Canvas Size:', self)
+        enter_label.setGeometry(0, 0, self.width(), 50)
+        enter_label.setFont(QFont('Arial', 16))
+        enter_label.setAlignment(Qt.AlignCenter)
+
+    def cancel(self):
+        self.close()
+
+    def ok(self):
+        self.success = True
+        self.close()
+
+    @staticmethod
+    def get_size(root):
+        dialog = SizeDialog(root)
+        dialog.exec()
+        return dialog.success, dialog.canvas_width, dialog.canvas_height
 
 
 class VanillaWindow(QMainWindow):
@@ -12,12 +53,15 @@ class VanillaWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.draw_canvas = False
+        self.canvas_width = 32
+        self.canvas_height = 32
         self.initUI()
 
     def initUI(self):
         self.showMaximized()
         self.setStyleSheet('QMainWindow{background-color: Gray;} QMenuBar::item::selected{background-color: #202020;}')
         self.create_menu_bar()
+
         self.show()
 
     def create_menu_bar(self):
@@ -45,9 +89,9 @@ class VanillaWindow(QMainWindow):
         edit_menu.addAction(copy_action)
 
     def ask_size(self):
-        size, success = QInputDialog.getInt(self, 'New', 'Enter Size:')
+        success, width, height = SizeDialog.get_size(self)
         if success:
-            self.create_canvas(size, size)
+            self.create_canvas(width, height)
 
     def create_canvas(self, width, height):
         self.canvas_width = width
