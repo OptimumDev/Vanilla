@@ -6,6 +6,19 @@ from Point import Point
 
 class SizeDialog(QDialog):
 
+    WIDTH = 300
+    HEIGHT = 300
+    FONT = QFont('Arial', 16)
+
+    BUTTON_WIDTH = 80
+    BUTTON_HEIGHT = 30
+    MIDDLE_BUTTON_SHIFT = 20
+    BOTTOM_BUTTON_SHIFT = 20 + BUTTON_HEIGHT
+    BUTTON_FONT = QFont('Arial', 12)
+
+    LABEL_HEIGHT = 50
+
+
     def __init__(self, root):
         super().__init__()
         self.root = root
@@ -16,19 +29,24 @@ class SizeDialog(QDialog):
 
     def initUI(self):
         self.setWindowFlags(Qt.MSWindowsFixedSizeDialogHint | Qt.WindowCloseButtonHint)
-        self.resize(300, 300)
+        self.resize(self.WIDTH, self.HEIGHT)
 
         cancel_button = QPushButton('Cancel', self)
-        cancel_button.move(0, 100)
+        cancel_button.resize(self.BUTTON_WIDTH, self.BUTTON_HEIGHT)
+        cancel_button.move(self.WIDTH / 2 - cancel_button.width() - self.MIDDLE_BUTTON_SHIFT,
+                           self.HEIGHT - self.BOTTOM_BUTTON_SHIFT)
+        cancel_button.setFont(self.BUTTON_FONT)
         cancel_button.clicked.connect(self.cancel)
 
         ok_button = QPushButton('Ok', self)
-        ok_button.move(cancel_button.width() + 10, 100)
+        ok_button.resize(self.BUTTON_WIDTH, self.BUTTON_HEIGHT)
+        ok_button.move(self.HEIGHT / 2 + self.MIDDLE_BUTTON_SHIFT, self.HEIGHT - self.BOTTOM_BUTTON_SHIFT)
+        ok_button.setFont(self.BUTTON_FONT)
         ok_button.clicked.connect(self.ok)
 
         enter_label = QLabel('Please Enter Canvas Size:', self)
-        enter_label.setGeometry(0, 0, self.width(), 50)
-        enter_label.setFont(QFont('Arial', 16))
+        enter_label.setGeometry(0, 0, self.width(), self.LABEL_HEIGHT)
+        enter_label.setFont(self.FONT)
         enter_label.setAlignment(Qt.AlignCenter)
 
     def cancel(self):
