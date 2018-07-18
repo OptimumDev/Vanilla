@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QMainWindow, QAction
+from PyQt5.QtWidgets import QMainWindow, QAction, QInputDialog
 from PyQt5.QtGui import QPainter, QImage
 
 
@@ -24,6 +24,7 @@ class VanillaWindow(QMainWindow):
 
         new_action = QAction('&New', self)
         new_action.setShortcut('Ctrl+N')
+        new_action.triggered.connect(self.ask_size)
         file_menu.addAction(new_action)
 
         open_action = QAction('&Open', self)
@@ -37,6 +38,17 @@ class VanillaWindow(QMainWindow):
         copy_action = QAction('&Copy', self)
         copy_action.setShortcut('Ctrl+C')
         edit_menu.addAction(copy_action)
+
+    def ask_size(self):
+        size, success = QInputDialog.getText(self, 'Create New Canvas', 'Enter Size:')
+        if success and size.isdigit():
+            print('yeah')
+            self.create_canvas(size)
+        else:
+            print('nope')
+
+    def create_canvas(self, size):
+        pass
 
     def paintEvent(self, event):
         painter = QPainter()

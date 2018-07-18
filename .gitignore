@@ -1,10 +1,10 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
-*$py.class
-Vanilla/.idea/
+*$py.class 
+Vanilla/.idea/ 
 Vanilla/.pytest_cache/
-Vanilla/logs/
+ Vanilla/logs/
 
 # C extensions
 *.so
