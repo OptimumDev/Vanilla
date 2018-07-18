@@ -58,10 +58,20 @@ class VanillaWindow(QMainWindow):
         painter = QPainter()
         painter.begin(self)
         if self.draw_canvas:
-            painter.fillRect(self.CANVAS_START.x, self.CANVAS_START.y,
-                             self.width() - self.CANVAS_START.x - self.SHIFT,
-                             self.height() - self.CANVAS_START.y - self.SHIFT,
+            size = self.height() - self.CANVAS_START.y - self.SHIFT
+            painter.fillRect(# self.CANVAS_START.x, self.CANVAS_START.y,
+                             (self.width() - size) / 2, self.SHIFT,
+                             # self.width() - self.CANVAS_START.x - self.SHIFT,
+                             # self.height() - self.CANVAS_START.y - self.SHIFT,
+                             size, size,
                              Qt.white)
+            painter.drawRect((self.width() - size) / 2, self.SHIFT, size, size,)
+            for i in range(1, self.canvas_height):
+                painter.drawLine((self.width() - size) / 2, self.SHIFT + size / self.canvas_height * i,
+                                 (self.width() - size) / 2 + size, self.SHIFT + size / self.canvas_height * i)
+            for i in range(1, self.canvas_width):
+                painter.drawLine((self.width() - size) / 2 + size / self.canvas_width * i, self.SHIFT,
+                                 (self.width() - size) / 2 + size / self.canvas_width * i, self.SHIFT + size)
         painter.drawImage(0, self.menu_bar.height(), QImage('images/ToolBar.png'))
 
         painter.end()
