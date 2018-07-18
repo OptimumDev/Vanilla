@@ -54,6 +54,8 @@ class SizeDialog(QDialog):
         height_label.setGeometry(10, self.LABEL_HEIGHT * 2, self.WIDTH / 2, self.LABEL_HEIGHT)
         height_label.setFont(self.LABEL_FONT)
 
+        # TO DO: width and height input with validator
+
     def cancel(self):
         self.close()
 
