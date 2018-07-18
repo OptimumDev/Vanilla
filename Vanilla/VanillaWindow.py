@@ -1,66 +1,8 @@
-from PyQt5.QtWidgets import QMainWindow, QAction, QDialog, QPushButton, QLabel
-from PyQt5.QtGui import QPainter, QImage, QFont
+from PyQt5.QtWidgets import QMainWindow, QAction
+from PyQt5.QtGui import QPainter, QImage
 from PyQt5.QtCore import Qt
 from Point import Point
-
-
-class SizeDialog(QDialog):
-
-    WIDTH = 300
-    HEIGHT = 300
-    FONT = QFont('Arial', 16)
-
-    BUTTON_WIDTH = 80
-    BUTTON_HEIGHT = 30
-    MIDDLE_BUTTON_SHIFT = 20
-    BOTTOM_BUTTON_SHIFT = 20 + BUTTON_HEIGHT
-    BUTTON_FONT = QFont('Arial', 12)
-
-    LABEL_HEIGHT = 50
-
-
-    def __init__(self, root):
-        super().__init__()
-        self.root = root
-        self.success = False
-        self.canvas_width = 32
-        self.canvas_height = 32
-        self.initUI()
-
-    def initUI(self):
-        self.setWindowFlags(Qt.MSWindowsFixedSizeDialogHint | Qt.WindowCloseButtonHint)
-        self.resize(self.WIDTH, self.HEIGHT)
-
-        cancel_button = QPushButton('Cancel', self)
-        cancel_button.resize(self.BUTTON_WIDTH, self.BUTTON_HEIGHT)
-        cancel_button.move(self.WIDTH / 2 - cancel_button.width() - self.MIDDLE_BUTTON_SHIFT,
-                           self.HEIGHT - self.BOTTOM_BUTTON_SHIFT)
-        cancel_button.setFont(self.BUTTON_FONT)
-        cancel_button.clicked.connect(self.cancel)
-
-        ok_button = QPushButton('Ok', self)
-        ok_button.resize(self.BUTTON_WIDTH, self.BUTTON_HEIGHT)
-        ok_button.move(self.HEIGHT / 2 + self.MIDDLE_BUTTON_SHIFT, self.HEIGHT - self.BOTTOM_BUTTON_SHIFT)
-        ok_button.setFont(self.BUTTON_FONT)
-        ok_button.clicked.connect(self.ok)
-
-        enter_label = QLabel('Please Enter Canvas Size:', self)
-        enter_label.setGeometry(0, 0, self.width(), self.LABEL_HEIGHT)
-        enter_label.setFont(self.FONT)
-        enter_label.setAlignment(Qt.AlignCenter)
-
-    def cancel(self):
-        self.close()
-
-    def ok(self):
-        self.success = True
-        self.close()
-
-    @staticmethod
-    def get_size(root):
-        dialog = SizeDialog(root)
-        dialog.exec()
-        return dialog.success, dialog.canvas_width, dialog.canvas_height
+from SizeDialog import SizeDialog
 
 
 class VanillaWindow(QMainWindow):
