@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QMainWindow, QAction, QLabel
 from PyQt5.QtGui import QPainter, QImage, QColor
 from SizeDialog import SizeDialog
 from Canvas import Canvas
+import math
 
 
 class VanillaWindow(QMainWindow):
@@ -72,9 +73,12 @@ class VanillaWindow(QMainWindow):
     def mouseMoveEvent(self, event):
         if not self.to_draw_canvas:
             return
-        x = int((event.pos().x() - self.canvas_left_side) / self.pixel_size)
-        y = int((event.pos().y() - self.canvas_upper_size) / self.pixel_size)
-        self.mouse_label.setText(f'({x}, {y})')
+        x = math.floor((event.pos().x() - self.canvas_left_side) / self.pixel_size)
+        y = math.floor((event.pos().y() - self.canvas_upper_size) / self.pixel_size)
+        if 0 <= x < self.canvas.width and 0 <= y < self.canvas.height:
+            self.mouse_label.setText(f'({x}, {y})')
+        else:
+            self.mouse_label.setText('out of range')
 
     def paintEvent(self, event):
         painter = QPainter()
