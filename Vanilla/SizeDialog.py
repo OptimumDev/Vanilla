@@ -73,6 +73,7 @@ class SizeDialog(QDialog):
                                  self.WIDTH - self.LABEL_SIDE_SHIFT - self.LABEL_WIDTH, self.LABEL_HEIGHT)
         height_input.setFont(self.BUTTON_FONT)
         height_input.setValidator(validator)
+        height_input.textChanged[str].connect(self.height_changed)
 
         # TO DO: width and height input with validator
 
@@ -81,6 +82,13 @@ class SizeDialog(QDialog):
             self.ok_button.setDisabled(True)
         else:
             self.canvas_width = int(width)
+            self.ok_button.setDisabled(False)
+
+    def height_changed(self, height):
+        if height == '' or int(height) <= 0:
+            self.ok_button.setDisabled(True)
+        else:
+            self.canvas_height = int(height)
             self.ok_button.setDisabled(False)
 
     def cancel(self):
