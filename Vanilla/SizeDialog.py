@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QDialog, QPushButton, QLabel, QLineEdit
-from PyQt5.QtGui import QFont, QIntValidator
+from PyQt5.QtGui import QFont, QIntValidator, QIcon
 from PyQt5.QtCore import Qt
 
 class SizeDialog(QDialog):
@@ -28,6 +28,8 @@ class SizeDialog(QDialog):
         self.initUI()
 
     def initUI(self):
+        self.setWindowTitle('New')
+        self.setWindowIcon(QIcon('images/icon.png'))
         self.setWindowFlags(Qt.MSWindowsFixedSizeDialogHint | Qt.WindowCloseButtonHint)
         self.resize(self.WIDTH, self.HEIGHT)
 

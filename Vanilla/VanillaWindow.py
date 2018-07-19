@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QMainWindow, QAction, QColorDialog, QPushButton
-from PyQt5.QtGui import QPainter, QImage, QColor
+from PyQt5.QtGui import QPainter, QImage, QColor, QIcon
 from PyQt5.Qt import Qt
 from SizeDialog import SizeDialog
 from Canvas import Canvas
@@ -23,6 +23,7 @@ class VanillaWindow(QMainWindow):
 
     def initUI(self):
         self.setWindowTitle('Vanilla')
+        self.setWindowIcon(QIcon('images/icon.png'))
         self.showMaximized()
         self.setStyleSheet('QMainWindow{background-color: Gray;} QMenuBar::item::selected{background-color: #202020;}')
         self.setMouseTracking(True)
