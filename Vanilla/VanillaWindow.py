@@ -87,7 +87,7 @@ class VanillaWindow(QMainWindow):
     def draw_pixels(self, painter):
         x = 0
         y = 0
-        for column in self.canvas.canvas:
+        for column in self.canvas.pixels:
             for pixel in column:
                 painter.fillRect(self.canvas_left_side + self.pixel_size * x,
                                  self.canvas_upper_size + self.pixel_size * y,
