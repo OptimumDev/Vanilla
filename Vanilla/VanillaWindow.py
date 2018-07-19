@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QMainWindow, QAction, QLabel
 from PyQt5.QtGui import QPainter, QImage, QColor
+from PyQt5.Qt import Qt
 from SizeDialog import SizeDialog
 from Canvas import Canvas
 import math
@@ -12,6 +13,9 @@ class VanillaWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.to_draw_canvas = False
+        self.cursor_on_canvas = False
+        self.mouse_pressed = False
+        self.cursor_position = (0, 0)
         self.canvas_width = 32
         self.canvas_height = 32
         self.canvas = Canvas(32, 32)
@@ -77,8 +81,22 @@ class VanillaWindow(QMainWindow):
         y = math.floor((event.pos().y() - self.canvas_upper_size) / self.pixel_size)
         if 0 <= x < self.canvas.width and 0 <= y < self.canvas.height:
             self.mouse_label.setText(f'({x}, {y})')
+            self.cursor_position = (x, y)
+            self.cursor_on_canvas = True
         else:
+            self.cursor_on_canvas = False
             self.mouse_label.setText('out of range')
+        if self.mouse_pressed:
+            self.canvas.paint(*self.cursor_position)
+            self.update()
+
+    def mousePressEvent(self, event):
+        if self.cursor_on_canvas and event.button() == Qt.LeftButton:
+            self.mouse_pressed = True
+
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.mouse_pressed = False
 
     def paintEvent(self, event):
         painter = QPainter()

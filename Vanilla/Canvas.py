@@ -24,7 +24,7 @@ class Canvas:
         self.width = width
         self.height = height
         self.pixels = [[Color() for y in range(height)] for x in range(width)]
-        self.current_color = Color()
+        self.current_color = Color(0, 0, 0)
 
     def paint(self, x, y):
         self.pixels[x][y] = self.current_color
