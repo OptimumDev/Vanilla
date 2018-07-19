@@ -1,5 +1,5 @@
-from PyQt5.QtWidgets import QDialog, QPushButton, QLabel
-from PyQt5.QtGui import QFont
+from PyQt5.QtWidgets import QDialog, QPushButton, QLabel, QLineEdit
+from PyQt5.QtGui import QFont, QIntValidator
 from PyQt5.QtCore import Qt
 
 class SizeDialog(QDialog):
@@ -11,10 +11,13 @@ class SizeDialog(QDialog):
     BUTTON_FONT = QFont('Arial', 12)
 
     LABEL_FONT = QFont('Arial', 16)
-    LABEL_HEIGHT = 50
+    LABEL_HEIGHT = 30
+    LABEL_WIDTH = 80
+    LABEL_SIDE_SHIFT = 10
+    LABEL_UPPER_SHIFT = 20
 
     WIDTH = 300
-    HEIGHT = LABEL_HEIGHT * 3 + BOTTOM_BUTTON_SHIFT
+    HEIGHT = (LABEL_HEIGHT + LABEL_UPPER_SHIFT) * 3 + BOTTOM_BUTTON_SHIFT
 
     def __init__(self, root):
         super().__init__()
@@ -35,11 +38,11 @@ class SizeDialog(QDialog):
         cancel_button.setFont(self.BUTTON_FONT)
         cancel_button.clicked.connect(self.cancel)
 
-        ok_button = QPushButton('Ok', self)
-        ok_button.setGeometry(self.WIDTH / 2 + self.MIDDLE_BUTTON_SHIFT, self.HEIGHT - self.BOTTOM_BUTTON_SHIFT,
+        self.ok_button = QPushButton('Ok', self)
+        self.ok_button.setGeometry(self.WIDTH / 2 + self.MIDDLE_BUTTON_SHIFT, self.HEIGHT - self.BOTTOM_BUTTON_SHIFT,
                               self.BUTTON_WIDTH, self.BUTTON_HEIGHT)
-        ok_button.setFont(self.BUTTON_FONT)
-        ok_button.clicked.connect(self.ok)
+        self.ok_button.setFont(self.BUTTON_FONT)
+        self.ok_button.clicked.connect(self.ok)
 
         enter_label = QLabel('Please Enter Canvas Size:', self)
         enter_label.setGeometry(0, 0, self.WIDTH, self.LABEL_HEIGHT)
@@ -47,14 +50,38 @@ class SizeDialog(QDialog):
         enter_label.setAlignment(Qt.AlignCenter)
 
         width_label = QLabel('Width', self)
-        width_label.setGeometry(10, self.LABEL_HEIGHT, self.WIDTH / 2, self.LABEL_HEIGHT)
+        width_label.setGeometry(self.LABEL_SIDE_SHIFT, self.LABEL_HEIGHT + self.LABEL_UPPER_SHIFT,
+                                self.LABEL_WIDTH, self.LABEL_HEIGHT)
         width_label.setFont(self.LABEL_FONT)
 
         height_label = QLabel('Height', self)
-        height_label.setGeometry(10, self.LABEL_HEIGHT * 2, self.WIDTH / 2, self.LABEL_HEIGHT)
+        height_label.setGeometry(self.LABEL_SIDE_SHIFT, (self.LABEL_HEIGHT + self.LABEL_UPPER_SHIFT) * 2,
+                                 self.LABEL_WIDTH, self.LABEL_HEIGHT)
         height_label.setFont(self.LABEL_FONT)
 
+        validator = QIntValidator(1, 2000)
+
+        width_input = QLineEdit(f'{self.canvas_width}', self)
+        width_input.setGeometry(self.LABEL_WIDTH, width_label.y(),
+                                self.WIDTH - self.LABEL_SIDE_SHIFT - self.LABEL_WIDTH, self.LABEL_HEIGHT)
+        width_input.setFont(self.BUTTON_FONT)
+        width_input.setValidator(validator)
+        width_input.textChanged[str].connect(self.width_changed)
+
+        height_input = QLineEdit(f'{self.canvas_height}', self)
+        height_input.setGeometry(self.LABEL_WIDTH, height_label.y(),
+                                 self.WIDTH - self.LABEL_SIDE_SHIFT - self.LABEL_WIDTH, self.LABEL_HEIGHT)
+        height_input.setFont(self.BUTTON_FONT)
+        height_input.setValidator(validator)
+
         # TO DO: width and height input with validator
+
+    def width_changed(self, width):
+        if width == '' or int(width) <= 0:
+            self.ok_button.setDisabled(True)
+        else:
+            self.canvas_width = int(width)
+            self.ok_button.setDisabled(False)
 
     def cancel(self):
         self.close()
