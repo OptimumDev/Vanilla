@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QDialog, QPushButton, QLabel, QLineEdit
 from PyQt5.QtGui import QFont, QIntValidator, QIcon
 from PyQt5.QtCore import Qt
 
+
 class SizeDialog(QDialog):
 
     BUTTON_WIDTH = 80

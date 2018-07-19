@@ -10,7 +10,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/Vanilla$Vanilla.coverage" NAME="Vanilla Coverage Results" MODIFIED="1532018106386" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Vanilla$Vanilla.coverage" NAME="Vanilla Coverage Results" MODIFIED="1532018371249" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
@@ -39,8 +39,8 @@
       <file leaf-file-name="SizeDialog.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/SizeDialog.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-858">
-              <caret line="30" column="32" selection-start-line="30" selection-start-column="32" selection-end-line="30" selection-end-column="32" />
+            <state relative-caret-position="88">
+              <caret line="4" lean-forward="true" selection-start-line="4" selection-end-line="4" />
               <folding>
                 <element signature="e#0#67#0" expanded="true" />
               </folding>
@@ -481,8 +481,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/SizeDialog.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-858">
-          <caret line="30" column="32" selection-start-line="30" selection-start-column="32" selection-end-line="30" selection-end-column="32" />
+        <state relative-caret-position="88">
+          <caret line="4" lean-forward="true" selection-start-line="4" selection-end-line="4" />
           <folding>
             <element signature="e#0#67#0" expanded="true" />
           </folding>
