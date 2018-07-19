@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QMainWindow, QAction, QLabel
+from PyQt5.QtWidgets import QMainWindow, QAction, QColorDialog, QPushButton
 from PyQt5.QtGui import QPainter, QImage, QColor
 from PyQt5.Qt import Qt
 from SizeDialog import SizeDialog
@@ -27,9 +27,14 @@ class VanillaWindow(QMainWindow):
         self.setMouseTracking(True)
         self.create_menu_bar()
 
-        self.mouse_label = QLabel('cursor', self)
-        self.mouse_label.move(10, 980)
-        self.mouse_label.show()
+        self.color_picker = QPushButton('', self)
+        self.color_picker.setGeometry(50, 650 + self.menu_bar.height(), 100, 100)
+        red = self.canvas.current_color.r
+        green = self.canvas.current_color.g
+        blue = self.canvas.current_color.b
+        self.color_picker.setStyleSheet(f'background: Color({red}, {green}, {blue})')
+        self.color_picker.clicked.connect(self.pick_color)
+        self.color_picker.show()
 
         self.show()
 
@@ -57,6 +62,11 @@ class VanillaWindow(QMainWindow):
         copy_action.setShortcut('Ctrl+C')
         edit_menu.addAction(copy_action)
 
+    def pick_color(self):
+        color = QColorDialog.getColor()
+        self.canvas.change_color(color.red(), color.green(), color.blue())
+        self.color_picker.setStyleSheet(f'background: {color.name()}')
+
     def ask_size(self):
         success, width, height = SizeDialog.get_size(self)
         if success:
@@ -80,12 +90,10 @@ class VanillaWindow(QMainWindow):
         x = math.floor((event.pos().x() - self.canvas_left_side) / self.pixel_size)
         y = math.floor((event.pos().y() - self.canvas_upper_size) / self.pixel_size)
         if 0 <= x < self.canvas.width and 0 <= y < self.canvas.height:
-            self.mouse_label.setText(f'({x}, {y})')
             self.cursor_position = (x, y)
             self.cursor_on_canvas = True
         else:
             self.cursor_on_canvas = False
-            self.mouse_label.setText('out of range')
         if self.mouse_pressed:
             self.canvas.paint(*self.cursor_position)
             self.update()
