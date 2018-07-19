@@ -22,6 +22,7 @@ class VanillaWindow(QMainWindow):
         self.initUI()
 
     def initUI(self):
+        self.setWindowTitle('Vanilla')
         self.showMaximized()
         self.setStyleSheet('QMainWindow{background-color: Gray;} QMenuBar::item::selected{background-color: #202020;}')
         self.setMouseTracking(True)
