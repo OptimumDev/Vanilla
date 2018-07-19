@@ -32,7 +32,7 @@ class SizeDialog(QDialog):
         self.resize(self.WIDTH, self.HEIGHT)
 
         cancel_button = QPushButton('Cancel', self)
-        cancel_button.setGeometry(self.WIDTH / 2 - cancel_button.width() - self.MIDDLE_BUTTON_SHIFT,
+        cancel_button.setGeometry(self.WIDTH / 2 - self.BUTTON_WIDTH - self.MIDDLE_BUTTON_SHIFT,
                                   self.HEIGHT - self.BOTTOM_BUTTON_SHIFT,
                                   self.BUTTON_WIDTH, self.BUTTON_HEIGHT)
         cancel_button.setFont(self.BUTTON_FONT)
@@ -74,8 +74,6 @@ class SizeDialog(QDialog):
         height_input.setFont(self.BUTTON_FONT)
         height_input.setValidator(validator)
         height_input.textChanged[str].connect(self.height_changed)
-
-        # TO DO: width and height input with validator
 
     def width_changed(self, width):
         if width == '' or int(width) <= 0:

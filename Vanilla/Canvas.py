@@ -1,6 +1,6 @@
 class Color:
 
-    def __init__(self, red, green, blue):
+    def __init__(self, red=255, green=255, blue=255):
         self.red = red
         self.green = green
         self.blue = blue
@@ -23,4 +23,11 @@ class Canvas:
     def __init__(self, width, height):
         self.width = width
         self.height = height
-        self.canvas = [[Color(255, 255, 255) for y in range(height)] for x in range(width)]
+        self.canvas = [[Color() for y in range(height)] for x in range(width)]
+        self.current_color = Color()
+
+    def paint(self, x, y):
+        self.canvas[x][y] = self.current_color
+
+    def change_color(self, red, green, blue):
+        self.current_color = Color(red, green, blue)

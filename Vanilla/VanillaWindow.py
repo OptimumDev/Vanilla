@@ -1,20 +1,19 @@
 from PyQt5.QtWidgets import QMainWindow, QAction
-from PyQt5.QtGui import QPainter, QImage
-from PyQt5.QtCore import Qt
-from Point import Point
+from PyQt5.QtGui import QPainter, QImage, QColor
 from SizeDialog import SizeDialog
+from Canvas import Canvas
 
 
 class VanillaWindow(QMainWindow):
 
     SHIFT = 100
-    CANVAS_START = Point(200 + SHIFT, SHIFT)
 
     def __init__(self):
         super().__init__()
-        self.draw_canvas = False
+        self.to_draw_canvas = False
         self.canvas_width = 32
         self.canvas_height = 32
+        self.canvas = Canvas(32, 32)
         self.initUI()
 
     def initUI(self):
@@ -54,28 +53,49 @@ class VanillaWindow(QMainWindow):
             self.create_canvas(width, height)
 
     def create_canvas(self, width, height):
-        self.canvas_width = width
-        self.canvas_height = height
-        self.draw_canvas = True
+        self.canvas = Canvas(width, height)
+        max_size = self.height() - self.SHIFT * 2
+        proportion = width / height
+        if proportion > 1:
+            self.canvas_width = max_size
+            self.canvas_height = max_size / proportion
+        else:
+            self.canvas_width = max_size * proportion
+            self.canvas_height = max_size
+        self.to_draw_canvas = True
 
     def paintEvent(self, event):
         painter = QPainter()
         painter.begin(self)
-        if self.draw_canvas:
-            size = self.height() - self.CANVAS_START.y - self.SHIFT
-            painter.fillRect(# self.CANVAS_START.x, self.CANVAS_START.y,
-                             (self.width() - size) / 2, self.SHIFT,
-                             # self.width() - self.CANVAS_START.x - self.SHIFT,
-                             # self.height() - self.CANVAS_START.y - self.SHIFT,
-                             size, size,
-                             Qt.white)
-            painter.drawRect((self.width() - size) / 2, self.SHIFT, size, size,)
-            for i in range(1, self.canvas_height):
-                painter.drawLine((self.width() - size) / 2, self.SHIFT + size / self.canvas_height * i,
-                                 (self.width() - size) / 2 + size, self.SHIFT + size / self.canvas_height * i)
-            for i in range(1, self.canvas_width):
-                painter.drawLine((self.width() - size) / 2 + size / self.canvas_width * i, self.SHIFT,
-                                 (self.width() - size) / 2 + size / self.canvas_width * i, self.SHIFT + size)
+        if self.to_draw_canvas:
+            self.draw_pixels(painter)
         painter.drawImage(0, self.menu_bar.height(), QImage('images/ToolBar.png'))
-
         painter.end()
+
+    @property
+    def pixel_size(self):
+        return self.canvas_width // self.canvas.width
+
+    @property
+    def canvas_left_side(self):
+        return (self.width() - self.canvas_width) / 2
+
+    @property
+    def canvas_upper_size(self):
+        return (self.height() - self.canvas_height) / 2
+
+    def draw_pixels(self, painter):
+        x = 0
+        y = 0
+        for column in self.canvas.canvas:
+            for pixel in column:
+                painter.fillRect(self.canvas_left_side + self.pixel_size * x,
+                                 self.canvas_upper_size + self.pixel_size * y,
+                                 self.pixel_size, self.pixel_size,
+                                 QColor(pixel.r, pixel.g, pixel.b))
+                painter.drawRect(self.canvas_left_side + self.pixel_size * x,
+                                 self.canvas_upper_size + self.pixel_size * y,
+                                 self.pixel_size, self.pixel_size)
+                y += 1
+            x += 1
+            y = 0
