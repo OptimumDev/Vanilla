@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QMainWindow, QAction
+from PyQt5.QtWidgets import QMainWindow, QAction, QLabel
 from PyQt5.QtGui import QPainter, QImage, QColor
 from SizeDialog import SizeDialog
 from Canvas import Canvas
@@ -19,7 +19,12 @@ class VanillaWindow(QMainWindow):
     def initUI(self):
         self.showMaximized()
         self.setStyleSheet('QMainWindow{background-color: Gray;} QMenuBar::item::selected{background-color: #202020;}')
+        self.setMouseTracking(True)
         self.create_menu_bar()
+
+        self.mouse_label = QLabel('cursor', self)
+        self.mouse_label.move(10, 980)
+        self.mouse_label.show()
 
         self.show()
 
@@ -63,6 +68,13 @@ class VanillaWindow(QMainWindow):
             self.canvas_width = max_size * proportion
             self.canvas_height = max_size
         self.to_draw_canvas = True
+
+    def mouseMoveEvent(self, event):
+        if not self.to_draw_canvas:
+            return
+        x = int((event.pos().x() - self.canvas_left_side) / self.pixel_size)
+        y = int((event.pos().y() - self.canvas_upper_size) / self.pixel_size)
+        self.mouse_label.setText(f'({x}, {y})')
 
     def paintEvent(self, event):
         painter = QPainter()
