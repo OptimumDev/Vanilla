@@ -117,7 +117,8 @@ class VanillaWindow(QMainWindow):
             self.convert_to_qimage().save(self.picture_name)
 
     def save_as(self):
-        name = QFileDialog.getSaveFileName(self, 'Save as', '', 'Image Files (*.png)')[0]
+        name = QFileDialog.getSaveFileName(self, 'Save', '',
+                                           'PNG Files (*.png);;JPG Files (*.jpg);;BMP Files (*.bmp)')[0]
         if name == '':
             return False
         self.picture_name = name
