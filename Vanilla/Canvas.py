@@ -20,7 +20,7 @@ class Color:
 
 class Canvas:
 
-    def __init__(self, width, height):
+    def __init__(self, width = 32, height = 32):
         self.width = width
         self.height = height
         self.pixels = [[Color() for y in range(height)] for x in range(width)]

@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QMainWindow, QAction, QColorDialog, QPushButton
+from PyQt5.QtWidgets import QMainWindow, QAction, QColorDialog, QPushButton, QFileDialog
 from PyQt5.QtGui import QPainter, QImage, QColor, QIcon
 from PyQt5.Qt import Qt
 from SizeDialog import SizeDialog
@@ -15,25 +15,25 @@ class VanillaWindow(QMainWindow):
         self.to_draw_canvas = False
         self.cursor_on_canvas = False
         self.mouse_pressed = False
-        self.cursor_position = (0, 0)
-        self.canvas_width = 32
-        self.canvas_height = 32
-        self.canvas = Canvas(32, 32)
+        self.picture_name = None
+        self.canvas = Canvas()
         self.initUI()
 
     def initUI(self):
         self.setWindowTitle('Vanilla')
         self.setWindowIcon(QIcon('images/icon.png'))
         self.showMaximized()
-        self.setStyleSheet('QMainWindow{background-color: Gray;} QMenuBar::item::selected{background-color: #202020;}')
+        self.setStyleSheet('QMainWindow{background: Gray;}'
+                           'QMenuBar::item:selected{background: #202020;}'
+                           'QMenu::item:disabled{color: #505050;}')
         self.setMouseTracking(True)
         self.create_menu_bar()
 
         self.color_picker = QPushButton('', self)
         self.color_picker.setGeometry(50, 650 + self.menu_bar.height(), 100, 100)
-        red = self.canvas.current_color.r
-        green = self.canvas.current_color.g
-        blue = self.canvas.current_color.b
+        red = Canvas().current_color.r
+        green = Canvas().current_color.g
+        blue = Canvas().current_color.b
         self.color_picker.setStyleSheet(f'background: Color({red}, {green}, {blue})')
         self.color_picker.clicked.connect(self.pick_color)
         self.color_picker.show()
@@ -56,9 +56,19 @@ class VanillaWindow(QMainWindow):
         open_action.setShortcut('Ctrl+O')
         file_menu.addAction(open_action)
 
-        save_action = QAction('&Save', self)
-        save_action.setShortcut('Ctrl+S')
-        file_menu.addAction(save_action)
+        file_menu.addSeparator()
+
+        self.save_action = QAction('&Save', self)
+        self.save_action.setShortcut('Ctrl+S')
+        self.save_action.triggered.connect(self.save)
+        self.save_action.setDisabled(True)
+        file_menu.addAction(self.save_action)
+
+        self.save_as_action = QAction('Save as', self)
+        self.save_as_action.setShortcut('Ctrl+Shift+S')
+        self.save_as_action.triggered.connect(self.save_as)
+        self.save_as_action.setDisabled(True)
+        file_menu.addAction(self.save_as_action)
 
         copy_action = QAction('&Copy', self)
         copy_action.setShortcut('Ctrl+C')
@@ -85,6 +95,33 @@ class VanillaWindow(QMainWindow):
             self.canvas_width = max_size * proportion
             self.canvas_height = max_size
         self.to_draw_canvas = True
+        self.save_action.setDisabled(False)
+        self.save_as_action.setDisabled(False)
+
+    def convert_to_qimage(self):
+        image = QImage(self.canvas.width, self.canvas.height, QImage.Format_RGB888)
+        x = 0
+        y = 0
+        for column in self.canvas.pixels:
+            for pixel in column:
+                image.setPixelColor(x, y, QColor(pixel.r, pixel.g, pixel.b))
+                y += 1
+            x += 1
+            y = 0
+        return image
+
+    def save(self):
+        if self.picture_name is None:
+            self.save_as()
+        else:
+            self.convert_to_qimage().save(self.picture_name)
+
+    def save_as(self):
+        name = QFileDialog.getSaveFileName(self, 'Save as', '', 'Image Files (*.png)')[0]
+        if name == '':
+            return False
+        self.picture_name = name
+        self.save()
 
     def mouseMoveEvent(self, event):
         if not self.to_draw_canvas:
