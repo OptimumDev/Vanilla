@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QMainWindow, QAction, QColorDialog, QPushButton, QFileDialog
+from PyQt5.QtWidgets import QMainWindow, QAction, QColorDialog, QPushButton, QFileDialog, QSlider
 from PyQt5.QtGui import QPainter, QImage, QColor, QIcon
 from PyQt5.Qt import Qt
 from SizeDialog import SizeDialog
@@ -38,7 +38,18 @@ class VanillaWindow(QMainWindow):
         self.color_picker.clicked.connect(self.pick_color)
         self.color_picker.show()
 
+        size_slider = QSlider(Qt.Horizontal, self)
+        size_slider.move(10,200)
+        size_slider.valueChanged[int].connect(self.size_changed)
+        size_slider.show()
+
         self.show()
+
+    def size_changed(self, value):
+        if value == 0:
+            self.canvas.brush_size = 1
+        else:
+            self.canvas.brush_size = value
 
     def create_menu_bar(self):
         self.menu_bar = self.menuBar()
@@ -141,6 +152,8 @@ class VanillaWindow(QMainWindow):
     def mousePressEvent(self, event):
         if self.cursor_on_canvas and event.button() == Qt.LeftButton:
             self.mouse_pressed = True
+            self.canvas.paint(*self.cursor_position)
+            self.update()
 
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.LeftButton:
@@ -175,9 +188,10 @@ class VanillaWindow(QMainWindow):
                                  self.canvas_upper_size + self.pixel_size * y,
                                  self.pixel_size, self.pixel_size,
                                  QColor(pixel.r, pixel.g, pixel.b))
-                painter.drawRect(self.canvas_left_side + self.pixel_size * x,
-                                 self.canvas_upper_size + self.pixel_size * y,
-                                 self.pixel_size, self.pixel_size)
+                if self.canvas.width < 100 and self.canvas.height < 100:
+                    painter.drawRect(self.canvas_left_side + self.pixel_size * x,
+                                     self.canvas_upper_size + self.pixel_size * y,
+                                     self.pixel_size, self.pixel_size)
                 y += 1
             x += 1
             y = 0
