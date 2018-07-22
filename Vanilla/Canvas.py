@@ -27,6 +27,7 @@ class Canvas:
         self.width = width
         self.height = height
         self.pixels = [[Color() for y in range(height)] for x in range(width)]
+        self.changed_pixels = [(x, y) for x in range(width) for y in range(height)]
         self.current_color = Color(0, 0, 0)
         self.brush_size = 1
 
@@ -40,6 +41,7 @@ class Canvas:
                 if 0 <= x + dx < len(self.pixels) and 0 <= y + dy < len(self.pixels[0]) and \
                         self.get_distance(x, y, x + dx, y + dy) <= self.brush_size:
                     self.pixels[x + dx][y + dy] = self.current_color
+                    self.changed_pixels.append((x + dx, y + dy))
 
     def change_color(self, red, green, blue):
         self.current_color = Color(red, green, blue)

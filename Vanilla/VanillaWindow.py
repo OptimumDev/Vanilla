@@ -183,18 +183,14 @@ class VanillaWindow(QMainWindow):
         return (self.height() - self.canvas_height) / 2
 
     def draw_pixels(self, painter):
-        x = 0
-        y = 0
-        for column in self.canvas.pixels:
-            for pixel in column:
-                painter.fillRect(self.canvas_left_side + self.pixel_size * x,
+        while len(self.canvas.changed_pixels) > 0:
+            x, y = self.canvas.changed_pixels.pop()
+            pixel = self.canvas.pixels[x][y]
+            painter.fillRect(self.canvas_left_side + self.pixel_size * x,
+                         self.canvas_upper_size + self.pixel_size * y,
+                         self.pixel_size, self.pixel_size,
+                         QColor(pixel.r, pixel.g, pixel.b))
+            if self.canvas.width < 100 and self.canvas.height < 100:
+                painter.drawRect(self.canvas_left_side + self.pixel_size * x,
                                  self.canvas_upper_size + self.pixel_size * y,
-                                 self.pixel_size, self.pixel_size,
-                                 QColor(pixel.r, pixel.g, pixel.b))
-                if self.canvas.width < 100 and self.canvas.height < 100:
-                    painter.drawRect(self.canvas_left_side + self.pixel_size * x,
-                                     self.canvas_upper_size + self.pixel_size * y,
-                                     self.pixel_size, self.pixel_size)
-                y += 1
-            x += 1
-            y = 0
+                                 self.pixel_size, self.pixel_size)
