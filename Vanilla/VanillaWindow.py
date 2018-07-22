@@ -96,7 +96,10 @@ class VanillaWindow(QMainWindow):
             self.create_canvas(width, height)
 
     def create_canvas(self, width, height):
+        old_canvas = self.canvas
         self.canvas = Canvas(width, height)
+        self.canvas.current_color = old_canvas.current_color
+        self.canvas.brush_size = old_canvas.brush_size
         max_size = self.height() - self.SHIFT * 2
         proportion = width / height
         if proportion > 1:
