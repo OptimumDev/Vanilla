@@ -164,7 +164,6 @@ class VanillaWindow(QMainWindow):
         if self.cursor_on_canvas and event.button() == Qt.LeftButton:
             self.mouse_pressed = True
             self.canvas.paint(*self.cursor_position)
-            self.update()
 
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.LeftButton:

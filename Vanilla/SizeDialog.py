@@ -34,18 +34,19 @@ class SizeDialog(QDialog):
         self.setWindowFlags(Qt.MSWindowsFixedSizeDialogHint | Qt.WindowCloseButtonHint)
         self.resize(self.WIDTH, self.HEIGHT)
 
+        self.ok_button = QPushButton('Ok', self)
+        self.ok_button.setGeometry(self.WIDTH / 2 - self.BUTTON_WIDTH - self.MIDDLE_BUTTON_SHIFT,
+                                   self.HEIGHT - self.BOTTOM_BUTTON_SHIFT,
+                                   self.BUTTON_WIDTH, self.BUTTON_HEIGHT)
+        self.ok_button.setFont(self.BUTTON_FONT)
+        self.ok_button.clicked.connect(self.ok)
+
         cancel_button = QPushButton('Cancel', self)
-        cancel_button.setGeometry(self.WIDTH / 2 - self.BUTTON_WIDTH - self.MIDDLE_BUTTON_SHIFT,
+        cancel_button.setGeometry(self.WIDTH / 2 + self.MIDDLE_BUTTON_SHIFT,
                                   self.HEIGHT - self.BOTTOM_BUTTON_SHIFT,
                                   self.BUTTON_WIDTH, self.BUTTON_HEIGHT)
         cancel_button.setFont(self.BUTTON_FONT)
         cancel_button.clicked.connect(self.cancel)
-
-        self.ok_button = QPushButton('Ok', self)
-        self.ok_button.setGeometry(self.WIDTH / 2 + self.MIDDLE_BUTTON_SHIFT, self.HEIGHT - self.BOTTOM_BUTTON_SHIFT,
-                              self.BUTTON_WIDTH, self.BUTTON_HEIGHT)
-        self.ok_button.setFont(self.BUTTON_FONT)
-        self.ok_button.clicked.connect(self.ok)
 
         enter_label = QLabel('Please Enter Canvas Size:', self)
         enter_label.setGeometry(0, 0, self.WIDTH, self.LABEL_HEIGHT)
