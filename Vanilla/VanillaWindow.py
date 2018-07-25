@@ -149,6 +149,19 @@ class VanillaWindow(QMainWindow):
         self.picture_name = name
         self.save()
 
+    def change_cursor(self):
+        size = (2 * self.canvas.brush_size - 1) * self.pixel_size
+        cursor = QPixmap(size, size)
+        cursor.fill(Qt.transparent)
+        painter = QPainter()
+        painter.begin(cursor)
+        painter.drawEllipse(0, 0,
+                            size - 1, size - 1)
+        painter.drawLine(size / 2, size / 4, size / 2, size / 4 * 3)
+        painter.drawLine(size / 4, size / 2, size / 4 * 3, size / 2)
+        painter.end()
+        self.setCursor(QCursor(cursor))
+
     def mouseMoveEvent(self, event):
         if not self.to_draw_canvas:
             return
@@ -157,8 +170,10 @@ class VanillaWindow(QMainWindow):
         if 0 <= x < self.canvas.width and 0 <= y < self.canvas.height:
             self.cursor_position = (x, y)
             self.cursor_on_canvas = True
+            self.change_cursor()
         else:
             self.cursor_on_canvas = False
+            self.setCursor(Qt.ArrowCursor)
         if self.mouse_pressed:
             self.canvas.paint(*self.cursor_position)
             while len(self.canvas.changed_pixels) > 0:
@@ -196,16 +211,3 @@ class VanillaWindow(QMainWindow):
                 y = self.canvas_upper_size + i * self.pixel_size
                 painter.drawLine(self.canvas_left_side, y,
                                  self.canvas_left_side + self.canvas_width, y)
-
-    def change_cursor(self):
-        size = (2 * self.canvas.brush_size - 1) * self.pixel_size
-        pm = QPixmap(size, size)
-        pm.fill(Qt.transparent)
-        painter = QPainter()
-        painter.begin(pm)
-        painter.drawEllipse(0, 0,
-                            size - 1, size - 1)
-        painter.drawLine(size / 2, size / 4, size / 2, size / 4 * 3)
-        painter.drawLine(size / 4, size / 2, size / 4 * 3, size / 2)
-        painter.end()
-        self.setCursor(QCursor(pm))
