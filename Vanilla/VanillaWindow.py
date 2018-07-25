@@ -108,11 +108,15 @@ class VanillaWindow(QMainWindow):
         else:
             self.canvas_width = max_size * proportion
             self.canvas_height = max_size
+        self.pixel_size = self.canvas_width // self.canvas.width
+        self.canvas_left_side = (self.width() - self.canvas_width) / 2
+        self.canvas_upper_size = (self.height() - self.canvas_height) / 2
+        self.canvas_as_image = self.convert_to_image()
         self.to_draw_canvas = True
         self.save_action.setDisabled(False)
         self.save_as_action.setDisabled(False)
 
-    def convert_to_qimage(self):
+    def convert_to_image(self):
         image = QImage(self.canvas.width, self.canvas.height, QImage.Format_RGB888)
         x = 0
         y = 0
@@ -128,7 +132,7 @@ class VanillaWindow(QMainWindow):
         if self.picture_name is None:
             self.save_as()
         else:
-            self.convert_to_qimage().save(self.picture_name)
+            self.canvas_as_image.save(self.picture_name)
 
     def save_as(self):
         name = QFileDialog.getSaveFileName(self, 'Save', '',
@@ -150,6 +154,10 @@ class VanillaWindow(QMainWindow):
             self.cursor_on_canvas = False
         if self.mouse_pressed:
             self.canvas.paint(*self.cursor_position)
+            while len(self.canvas.changed_pixels) > 0:
+                x, y = self.canvas.changed_pixels.pop()
+                pixel = self.canvas.pixels[x][y]
+                self.canvas_as_image.setPixelColor(x, y, QColor(pixel.r, pixel.g, pixel.b))
             self.update()
 
     def mousePressEvent(self, event):
@@ -170,27 +178,7 @@ class VanillaWindow(QMainWindow):
         painter.drawImage(0, self.menu_bar.height(), QImage('images/ToolBar.png'))
         painter.end()
 
-    @property
-    def pixel_size(self):
-        return self.canvas_width // self.canvas.width
-
-    @property
-    def canvas_left_side(self):
-        return (self.width() - self.canvas_width) / 2
-
-    @property
-    def canvas_upper_size(self):
-        return (self.height() - self.canvas_height) / 2
-
     def draw_pixels(self, painter):
-        while len(self.canvas.changed_pixels) > 0:
-            x, y = self.canvas.changed_pixels.pop()
-            pixel = self.canvas.pixels[x][y]
-            painter.fillRect(self.canvas_left_side + self.pixel_size * x,
-                         self.canvas_upper_size + self.pixel_size * y,
-                         self.pixel_size, self.pixel_size,
-                         QColor(pixel.r, pixel.g, pixel.b))
-            if self.canvas.width < 100 and self.canvas.height < 100:
-                painter.drawRect(self.canvas_left_side + self.pixel_size * x,
-                                 self.canvas_upper_size + self.pixel_size * y,
-                                 self.pixel_size, self.pixel_size)
+        painter.drawImage(self.canvas_left_side, self.canvas_upper_size,
+                          self.canvas_as_image.scaled(self.canvas_width, self.canvas_height))
+
