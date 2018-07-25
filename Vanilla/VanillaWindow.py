@@ -198,12 +198,14 @@ class VanillaWindow(QMainWindow):
                                  self.canvas_left_side + self.canvas_width, y)
 
     def change_cursor(self):
-        radius = self.canvas.brush_size * self.pixel_size
-        pm = QPixmap(radius, radius)
+        size = (2 * self.canvas.brush_size - 1) * self.pixel_size
+        pm = QPixmap(size, size)
         pm.fill(Qt.transparent)
         painter = QPainter()
         painter.begin(pm)
         painter.drawEllipse(0, 0,
-                            radius - 1, radius - 1)
+                            size - 1, size - 1)
+        painter.drawLine(size / 2, size / 4, size / 2, size / 4 * 3)
+        painter.drawLine(size / 4, size / 2, size / 4 * 3, size / 2)
         painter.end()
         self.setCursor(QCursor(pm))
