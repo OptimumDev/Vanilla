@@ -1,5 +1,5 @@
-from PyQt5.QtWidgets import QMainWindow, QAction, QColorDialog, QPushButton, QFileDialog, QSlider
-from PyQt5.QtGui import QPainter, QImage, QColor, QIcon
+from PyQt5.QtWidgets import QMainWindow, QAction, QColorDialog, QPushButton, QFileDialog, QSlider, QLabel
+from PyQt5.QtGui import QPainter, QImage, QColor, QIcon, QCursor, QPixmap
 from PyQt5.Qt import Qt
 from SizeDialog import SizeDialog
 from Canvas import Canvas
@@ -43,6 +43,10 @@ class VanillaWindow(QMainWindow):
         size_slider.valueChanged[int].connect(self.size_changed)
         size_slider.show()
 
+        self.size_label = QLabel('1', self)
+        self.size_label.move(size_slider.x() + size_slider.width() + 10, size_slider.y())
+        self.size_label.show()
+
         self.show()
 
     def size_changed(self, value):
@@ -50,6 +54,9 @@ class VanillaWindow(QMainWindow):
             self.canvas.brush_size = 1
         else:
             self.canvas.brush_size = value
+        if self.to_draw_canvas:
+            self.change_cursor()
+        self.size_label.setText(f'{self.canvas.brush_size}')
 
     def create_menu_bar(self):
         self.menu_bar = self.menuBar()
@@ -189,3 +196,14 @@ class VanillaWindow(QMainWindow):
                 y = self.canvas_upper_size + i * self.pixel_size
                 painter.drawLine(self.canvas_left_side, y,
                                  self.canvas_left_side + self.canvas_width, y)
+
+    def change_cursor(self):
+        radius = self.canvas.brush_size * self.pixel_size
+        pm = QPixmap(radius, radius)
+        pm.fill(Qt.transparent)
+        painter = QPainter()
+        painter.begin(pm)
+        painter.drawEllipse(0, 0,
+                            radius - 1, radius - 1)
+        painter.end()
+        self.setCursor(QCursor(pm))

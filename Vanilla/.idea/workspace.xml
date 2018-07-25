@@ -10,7 +10,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/Vanilla$Vanilla.coverage" NAME="Vanilla Coverage Results" MODIFIED="1532525258731" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Vanilla$Vanilla.coverage" NAME="Vanilla Coverage Results" MODIFIED="1532535131903" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
@@ -23,37 +23,13 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="GameWindow.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../../Reversi/Reversi/GameWindow.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2530">
-              <caret line="123" column="24" selection-start-line="123" selection-start-column="24" selection-end-line="123" selection-end-column="24" />
-              <folding>
-                <element signature="e#25#54#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="VanillaWindow.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="VanillaWindow.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/VanillaWindow.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-120">
-              <caret line="166" column="21" lean-forward="true" selection-start-line="166" selection-start-column="21" selection-end-line="166" selection-end-column="21" />
+            <state relative-caret-position="286">
+              <caret line="58" column="57" selection-start-line="58" selection-start-column="57" selection-end-line="58" selection-end-column="57" />
               <folding>
                 <element signature="e#0#105#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="GameWindow.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/../../TowerDefence/TowerDefence/GameWindow.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="418">
-              <caret line="220" column="32" lean-forward="true" selection-start-line="220" selection-start-column="4" selection-end-line="220" selection-end-column="32" />
-              <folding>
-                <element signature="e#0#29#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -62,26 +38,20 @@
       <file leaf-file-name="SizeDialog.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/SizeDialog.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="22">
-              <caret line="1" column="44" selection-start-line="1" selection-start-column="44" selection-end-line="1" selection-end-column="44" />
+            <state relative-caret-position="242">
+              <caret line="13" column="35" selection-start-line="13" selection-start-column="35" selection-end-line="13" selection-end-column="35" />
+              <folding>
+                <element signature="e#0#67#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Canvas.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Canvas.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Canvas.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="144">
-              <caret line="33" column="17" lean-forward="true" selection-start-line="33" selection-start-column="17" selection-end-line="33" selection-end-column="17" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Point.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/Point.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1408">
-              <caret line="64" column="70" lean-forward="true" selection-start-line="63" selection-start-column="4" selection-end-line="64" selection-end-column="70" />
+            <state relative-caret-position="254">
+              <caret line="38" column="25" selection-start-line="38" selection-start-column="24" selection-end-line="38" selection-end-column="25" />
             </state>
           </provider>
         </entry>
@@ -106,9 +76,10 @@
       <list>
         <option value="$PROJECT_DIR$/Vanilla.py" />
         <option value="$PROJECT_DIR$/../../Reversi/Reversi/GameWindow.py" />
+        <option value="$PROJECT_DIR$/Point.py" />
         <option value="$PROJECT_DIR$/SizeDialog.py" />
-        <option value="$PROJECT_DIR$/Canvas.py" />
         <option value="$PROJECT_DIR$/VanillaWindow.py" />
+        <option value="$PROJECT_DIR$/Canvas.py" />
       </list>
     </option>
   </component>
@@ -243,10 +214,51 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="16" />
+      <default-breakpoints>
+        <breakpoint type="python-exception">
+          <properties notifyOnTerminate="true" exception="BaseException">
+            <option name="notifyOnTerminate" value="true" />
+          </properties>
+        </breakpoint>
+      </default-breakpoints>
+      <option name="time" value="17" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/Vanilla.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="110">
+          <caret line="7" selection-start-line="7" selection-end-line="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/SizeDialog.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="242">
+          <caret line="13" column="35" lean-forward="true" selection-start-line="13" selection-start-column="35" selection-end-line="13" selection-end-column="35" />
+          <folding>
+            <element signature="e#0#67#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Canvas.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="726">
+          <caret line="33" column="17" lean-forward="true" selection-start-line="33" selection-start-column="17" selection-end-line="33" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/VanillaWindow.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3762">
+          <caret line="176" column="47" selection-start-line="176" selection-start-column="47" selection-end-line="176" selection-end-column="47" />
+          <folding>
+            <element signature="e#0#105#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Vanilla.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="110">
@@ -258,9 +270,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2530">
           <caret line="123" column="24" selection-start-line="123" selection-start-column="24" selection-end-line="123" selection-end-column="24" />
-          <folding>
-            <element signature="e#25#54#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -268,6 +277,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="22">
           <caret line="1" column="44" selection-start-line="1" selection-start-column="44" selection-end-line="1" selection-end-column="44" />
+          <folding>
+            <element signature="e#0#67#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -278,13 +290,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Point.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1408">
-          <caret line="64" column="70" lean-forward="true" selection-start-line="63" selection-start-column="4" selection-end-line="64" selection-end-column="70" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/Point.py" />
     <entry file="file://$PROJECT_DIR$/VanillaWindow.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="3916">
@@ -306,9 +312,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1430">
           <caret line="65" column="27" selection-start-line="65" selection-start-column="27" selection-end-line="65" selection-end-column="27" />
-          <folding>
-            <element signature="e#25#54#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -402,9 +405,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="374">
           <caret line="64" column="59" selection-start-line="64" selection-start-column="8" selection-end-line="64" selection-end-column="59" />
-          <folding>
-            <element signature="e#25#54#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -511,20 +511,28 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Point.py">
+    <entry file="file://$PROJECT_DIR$/../../TowerDefence/TowerDefence/GameWindow.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1408">
-          <caret line="64" column="70" lean-forward="true" selection-start-line="63" selection-start-column="4" selection-end-line="64" selection-end-column="70" />
+        <state relative-caret-position="418">
+          <caret line="220" column="32" lean-forward="true" selection-start-line="220" selection-start-column="4" selection-end-line="220" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Point.py" />
+    <entry file="file://$PROJECT_DIR$/SizeDialog.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="242">
+          <caret line="13" column="35" selection-start-line="13" selection-start-column="35" selection-end-line="13" selection-end-column="35" />
+          <folding>
+            <element signature="e#0#67#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../../Reversi/Reversi/GameWindow.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2530">
+        <state relative-caret-position="396">
           <caret line="123" column="24" selection-start-line="123" selection-start-column="24" selection-end-line="123" selection-end-column="24" />
-          <folding>
-            <element signature="e#25#54#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -535,37 +543,29 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Canvas.py">
+    <entry file="file://$PROJECT_DIR$/../../net.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="33" column="17" lean-forward="true" selection-start-line="33" selection-start-column="17" selection-end-line="33" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/SizeDialog.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="22">
-          <caret line="1" column="44" selection-start-line="1" selection-start-column="44" selection-end-line="1" selection-end-column="44" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../../TowerDefence/TowerDefence/GameWindow.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="418">
-          <caret line="220" column="32" lean-forward="true" selection-start-line="220" selection-start-column="4" selection-end-line="220" selection-end-column="32" />
+        <state>
           <folding>
-            <element signature="e#0#29#0" expanded="true" />
+            <element signature="e#0#13#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/VanillaWindow.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-120">
-          <caret line="166" column="21" lean-forward="true" selection-start-line="166" selection-start-column="21" selection-end-line="166" selection-end-column="21" />
+        <state relative-caret-position="286">
+          <caret line="58" column="57" selection-start-line="58" selection-start-column="57" selection-end-line="58" selection-end-column="57" />
           <folding>
             <element signature="e#0#105#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Canvas.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="254">
+          <caret line="38" column="25" selection-start-line="38" selection-start-column="24" selection-end-line="38" selection-end-column="25" />
         </state>
       </provider>
     </entry>
