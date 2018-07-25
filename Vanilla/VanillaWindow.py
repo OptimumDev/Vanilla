@@ -108,7 +108,7 @@ class VanillaWindow(QMainWindow):
         else:
             self.canvas_width = max_size * proportion
             self.canvas_height = max_size
-        self.pixel_size = self.canvas_width // self.canvas.width
+        self.pixel_size = self.canvas_width / self.canvas.width
         self.canvas_left_side = (self.width() - self.canvas_width) / 2
         self.canvas_upper_size = (self.height() - self.canvas_height) / 2
         self.canvas_as_image = self.convert_to_image()
@@ -181,4 +181,12 @@ class VanillaWindow(QMainWindow):
     def draw_pixels(self, painter):
         painter.drawImage(self.canvas_left_side, self.canvas_upper_size,
                           self.canvas_as_image.scaled(self.canvas_width, self.canvas_height))
-
+        if self.canvas.width < 100 and self.canvas.height < 100:
+            for i in range(self.canvas.width + 1):
+                x = self.canvas_left_side + i * self.pixel_size
+                painter.drawLine(x, self.canvas_upper_size,
+                                 x, self.canvas_upper_size + self.canvas_height)
+            for i in range(self.canvas.height + 1):
+                y = self.canvas_upper_size + i * self.pixel_size
+                painter.drawLine(self.canvas_left_side, y,
+                                 self.canvas_left_side + self.canvas_width, y)
