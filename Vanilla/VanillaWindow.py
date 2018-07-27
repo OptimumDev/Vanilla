@@ -1,5 +1,5 @@
-from PyQt5.QtWidgets import QMainWindow, QAction, QColorDialog, QPushButton, QFileDialog, QSlider, QLabel
-from PyQt5.QtGui import QPainter, QImage, QColor, QIcon, QCursor, QPixmap
+from PyQt5.QtWidgets import QMainWindow, QAction, QColorDialog, QPushButton, QFileDialog, QSlider, QLabel, QLineEdit
+from PyQt5.QtGui import QPainter, QImage, QColor, QIcon, QCursor, QPixmap, QFont, QIntValidator
 from PyQt5.Qt import Qt
 from SizeDialog import SizeDialog
 from Canvas import Canvas
@@ -9,6 +9,7 @@ import math
 class VanillaWindow(QMainWindow):
 
     SHIFT = 100
+    MAX_BRUSH_SIZE = 2000
 
     def __init__(self):
         super().__init__()
@@ -38,25 +39,23 @@ class VanillaWindow(QMainWindow):
         self.color_picker.clicked.connect(self.pick_color)
         self.color_picker.show()
 
-        size_slider = QSlider(Qt.Horizontal, self)
-        size_slider.move(10,200)
-        size_slider.valueChanged[int].connect(self.size_changed)
-        size_slider.show()
+        self.size_slider = QSlider(Qt.Horizontal, self)
+        self.size_slider.setGeometry(10, 200, 145, 20)
+        self.size_slider.setMaximum(self.MAX_BRUSH_SIZE)
+        self.size_slider.setSingleStep(1)
+        self.size_slider.valueChanged[int].connect(self.size_changed)
+        self.size_slider.show()
 
-        self.size_label = QLabel('1', self)
-        self.size_label.move(size_slider.x() + size_slider.width() + 10, size_slider.y())
-        self.size_label.show()
+        validator = QIntValidator(1, self.MAX_BRUSH_SIZE)
+        self.size_edit = QLineEdit('1', self)
+        self.size_edit.setGeometry(self.size_slider.x() + self.size_slider.width() + 5, self.size_slider.y(), 35, 20)
+        self.size_edit.setFont(QFont('Arial', 10))
+        self.size_edit.setAlignment(Qt.AlignCenter)
+        self.size_edit.setValidator(validator)
+        self.size_edit.textChanged[str].connect(self.size_edited)
+        self.size_edit.show()
 
         self.show()
-
-    def size_changed(self, value):
-        if value == 0:
-            self.canvas.brush_size = 1
-        else:
-            self.canvas.brush_size = value
-        if self.to_draw_canvas:
-            self.change_cursor()
-        self.size_label.setText(f'{self.canvas.brush_size}')
 
     def create_menu_bar(self):
         self.menu_bar = self.menuBar()
@@ -91,6 +90,26 @@ class VanillaWindow(QMainWindow):
         copy_action = QAction('&Copy', self)
         copy_action.setShortcut('Ctrl+C')
         edit_menu.addAction(copy_action)
+
+    def size_edited(self, size):
+        if size == '':
+            value = 1
+        else:
+            value = int(size)
+        if value == 0:
+            self.size_edit.setText('1')
+        else:
+            self.size_slider.setValue(value)
+
+
+    def size_changed(self, value):
+        if value == 0:
+            self.canvas.brush_size = 1
+        else:
+            self.canvas.brush_size = value
+        if self.to_draw_canvas:
+            self.change_cursor()
+        self.size_edit.setText(f'{self.canvas.brush_size}')
 
     def pick_color(self):
         color = QColorDialog.getColor()
