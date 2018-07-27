@@ -41,8 +41,8 @@ class VanillaWindow(QMainWindow):
 
         self.size_slider = QSlider(Qt.Horizontal, self)
         self.size_slider.setGeometry(10, 200, 145, 20)
+        self.size_slider.setMinimum(1)
         self.size_slider.setMaximum(self.MAX_BRUSH_SIZE)
-        self.size_slider.setSingleStep(1)
         self.size_slider.valueChanged[int].connect(self.size_changed)
         self.size_slider.show()
 
