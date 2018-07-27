@@ -10,6 +10,7 @@ class VanillaWindow(QMainWindow):
 
     SHIFT = 100
     MAX_BRUSH_SIZE = 2000
+    TOOLBAR_HEIGHT = 791
 
     def __init__(self):
         super().__init__()
@@ -31,7 +32,9 @@ class VanillaWindow(QMainWindow):
         self.create_menu_bar()
 
         self.color_picker = QPushButton('', self)
-        self.color_picker.setGeometry(50, 650 + self.menu_bar.height(), 100, 100)
+        color_picker_height = 100
+        self.color_picker.setGeometry(50, self.TOOLBAR_HEIGHT + self.menu_bar.height() - color_picker_height - 50,
+                                      100, color_picker_height)
         red = Canvas().current_color.r
         green = Canvas().current_color.g
         blue = Canvas().current_color.b
@@ -40,7 +43,8 @@ class VanillaWindow(QMainWindow):
         self.color_picker.show()
 
         self.size_slider = QSlider(Qt.Horizontal, self)
-        self.size_slider.setGeometry(10, 200, 145, 20)
+        slider_height = 20
+        self.size_slider.setGeometry(10, self.color_picker.y() - slider_height - 60, 145, slider_height)
         self.size_slider.setMinimum(1)
         self.size_slider.setMaximum(self.MAX_BRUSH_SIZE)
         self.size_slider.valueChanged[int].connect(self.size_changed)
@@ -54,6 +58,13 @@ class VanillaWindow(QMainWindow):
         self.size_edit.setValidator(validator)
         self.size_edit.textChanged[str].connect(self.size_edited)
         self.size_edit.show()
+
+        self.size_label = QLabel('Brush Size:', self)
+        self.size_label.setFont(QFont('Arial', 16))
+        self.size_label.setStyleSheet('color: lightGray;')
+        self.size_label.setGeometry(self.size_slider.x(), self.size_slider.y() - self.size_slider.height() - 10,
+                                    self.size_slider.width() + self.size_edit.width() + 5, 30)
+        self.size_label.show()
 
         self.show()
 
