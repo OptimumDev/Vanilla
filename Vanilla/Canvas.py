@@ -1,35 +1,21 @@
 import math
-
-
-class Color:
-
-    def __init__(self, red=255, green=255, blue=255):
-        self.red = red
-        self.green = green
-        self.blue = blue
-
-    @property
-    def r(self):
-        return self.red
-
-    @property
-    def g(self):
-        return self.green
-
-    @property
-    def b(self):
-        return self.blue
+from Color import Color
 
 
 class Canvas:
 
-    def __init__(self, width = 32, height = 32):
+    STANDARD_WIDTH = 32
+    STANDARD_HEIGHT = 32
+    STANDARD_COLOR = Color(0, 0, 0)
+    STANDARD_BRUSH_SIZE = 1
+
+    def __init__(self, width=STANDARD_WIDTH, height=STANDARD_HEIGHT):
         self.width = width
         self.height = height
         self.pixels = [[Color() for y in range(height)] for x in range(width)]
         self.changed_pixels = [(x, y) for x in range(width) for y in range(height)]
-        self.current_color = Color(0, 0, 0)
-        self.brush_size = 1
+        self.current_color = self.STANDARD_COLOR
+        self.brush_size = self.STANDARD_BRUSH_SIZE
 
     @staticmethod
     def get_distance(x1, y1, x2, y2):
