@@ -73,7 +73,7 @@ class VanillaWindow(QMainWindow):
         self.menu_bar.setStyleSheet('selection-background-color: #202020; background: #393939; color: lightGray;')
 
         file_menu = self.menu_bar.addMenu('&File')
-        edit_menu = self.menu_bar.addMenu('&Edit')
+        # edit_menu = self.menu_bar.addMenu('&Edit')
 
         new_action = QAction('&New', self)
         new_action.setShortcut('Ctrl+N')
@@ -98,9 +98,9 @@ class VanillaWindow(QMainWindow):
         self.save_as_action.setDisabled(True)
         file_menu.addAction(self.save_as_action)
 
-        copy_action = QAction('&Copy', self)
-        copy_action.setShortcut('Ctrl+C')
-        edit_menu.addAction(copy_action)
+        # copy_action = QAction('&Copy', self)
+        # copy_action.setShortcut('Ctrl+C')
+        # edit_menu.addAction(copy_action)
 
     def size_edited(self, size):
         if size == '':
@@ -111,7 +111,6 @@ class VanillaWindow(QMainWindow):
             self.size_edit.setText('1')
         else:
             self.size_slider.setValue(value)
-
 
     def size_changed(self, value):
         if value == 0:
