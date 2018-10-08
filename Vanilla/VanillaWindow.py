@@ -9,8 +9,10 @@ import math
 class VanillaWindow(QMainWindow):
 
     SHIFT = 100
-    MAX_BRUSH_SIZE = 2000
+    MAX_BRUSH_SIZE = 500
     TOOLBAR_HEIGHT = 791
+    BUTTON_SIZE = 64
+    MENU_BAR_HEIGHT = 30
 
     def __init__(self):
         super().__init__()
@@ -19,6 +21,7 @@ class VanillaWindow(QMainWindow):
         self.mouse_pressed = False
         self.picture_name = None
         self.canvas = Canvas()
+        self.button_images = {}
         self.initUI()
 
     def initUI(self):
@@ -33,7 +36,7 @@ class VanillaWindow(QMainWindow):
 
         self.color_picker = QPushButton('', self)
         color_picker_height = 100
-        self.color_picker.setGeometry(50, self.TOOLBAR_HEIGHT + self.menu_bar.height() - color_picker_height - 50,
+        self.color_picker.setGeometry(50, self.TOOLBAR_HEIGHT + self.MENU_BAR_HEIGHT - color_picker_height - 50,
                                       100, color_picker_height)
         red = Canvas().current_color.r
         green = Canvas().current_color.g
@@ -65,6 +68,29 @@ class VanillaWindow(QMainWindow):
         self.size_label.setGeometry(self.size_slider.x(), self.size_slider.y() - self.size_slider.height() - 10,
                                     self.size_slider.width() + self.size_edit.width() + 5, 30)
         self.size_label.show()
+
+        button_shift = 30
+        self.brush_button = self.create_button(20, self.MENU_BAR_HEIGHT + 10, 'Brush')
+
+        self.eraser_button = self.create_button(self.brush_button.x() + self.brush_button.width() + button_shift,
+                                                self.brush_button.y(), 'Eraser')
+
+        self.fill_button = self.create_button(self.brush_button.x(),
+                                              self.brush_button.y() + self.brush_button.height() + button_shift,
+                                              'Fill')
+
+        self.selection_button = self.create_button(self.eraser_button.x(), self.fill_button.y(), 'Selection')
+
+        self.line_button = self.create_button(20, 300, 'Line')
+
+        self.square_button = self.create_button(self.line_button.x() + self.line_button.width() + button_shift,
+                                                self.line_button.y(), 'Square')
+
+        self.circle_button = self.create_button(self.line_button.x(),
+                                                self.line_button.y() + self.line_button.height() + button_shift,
+                                                'Circle')
+
+        self.triangle_button = self.create_button(self.square_button.x(), self.circle_button.y(), 'Triangle')
 
         self.show()
 
@@ -101,6 +127,14 @@ class VanillaWindow(QMainWindow):
         # copy_action = QAction('&Copy', self)
         # copy_action.setShortcut('Ctrl+C')
         # edit_menu.addAction(copy_action)
+
+    def create_button(self, x, y, image):
+        button = QPushButton('', self)
+        button.setGeometry(x, y, self.BUTTON_SIZE, self.BUTTON_SIZE)
+        button.setStyleSheet('background: transparent;')
+        self.button_images[button] = QImage(f'images/{image}.png')
+        button.show()
+        return button
 
     def size_edited(self, size):
         if size == '':
@@ -226,6 +260,7 @@ class VanillaWindow(QMainWindow):
         if self.to_draw_canvas:
             self.draw_pixels(painter)
         painter.drawImage(0, self.menu_bar.height(), QImage('images/ToolBar.png'))
+        self.draw_buttons(painter)
         painter.end()
 
     def draw_pixels(self, painter):
@@ -240,3 +275,10 @@ class VanillaWindow(QMainWindow):
                 y = self.canvas_upper_size + i * self.pixel_size
                 painter.drawLine(self.canvas_left_side, y,
                                  self.canvas_left_side + self.canvas_width, y)
+
+    def draw_buttons(self, painter):
+        for button, image in self.button_images.items():
+            painter.setBrush(QColor(self.canvas.current_color.r, self.canvas.current_color.g,
+                                    self.canvas.current_color.b))
+            painter.drawRect(button.x() + 2, button.y() + 2, self.BUTTON_SIZE - 4, self.BUTTON_SIZE - 4)
+            painter.drawImage(button.x(), button.y(), image.scaled(self.BUTTON_SIZE, self.BUTTON_SIZE))
