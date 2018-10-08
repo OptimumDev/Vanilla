@@ -30,7 +30,9 @@ class VanillaWindow(QMainWindow):
         self.showMaximized()
         self.setStyleSheet('QMainWindow{background: Gray;}'
                            'QMenuBar::item:selected{background: #202020;}'
-                           'QMenu::item:disabled{color: #505050;}')
+                           'QMenu::item:disabled{color: #505050;}'
+                           'QToolTip{background-color: black; font-size: 16px; color: white; '
+                           'border: black solid 1px}')
         self.setMouseTracking(True)
         self.create_menu_bar()
 
@@ -70,27 +72,29 @@ class VanillaWindow(QMainWindow):
         self.size_label.show()
 
         button_shift = 30
-        self.brush_button = self.create_button(20, self.MENU_BAR_HEIGHT + 10, 'Brush')
+        self.brush_button = self.create_button(20, self.MENU_BAR_HEIGHT + 10, 'Brush', 'B', self.brush_button_clicked)
+        self.brush_button.setShortcut('B')
+        self.brush_button.setToolTip('Brush (B)')
 
         self.eraser_button = self.create_button(self.brush_button.x() + self.brush_button.width() + button_shift,
-                                                self.brush_button.y(), 'Eraser')
+                                                self.brush_button.y(), 'Eraser', 'E', self.eraser_button_clicked)
 
         self.fill_button = self.create_button(self.brush_button.x(),
                                               self.brush_button.y() + self.brush_button.height() + button_shift,
-                                              'Fill')
+                                              'Fill', 'F')
 
-        self.selection_button = self.create_button(self.eraser_button.x(), self.fill_button.y(), 'Selection')
+        self.selection_button = self.create_button(self.eraser_button.x(), self.fill_button.y(), 'Selection', 'S')
 
-        self.line_button = self.create_button(20, 300, 'Line')
+        self.line_button = self.create_button(20, 300, 'Line', 'L')
 
         self.square_button = self.create_button(self.line_button.x() + self.line_button.width() + button_shift,
-                                                self.line_button.y(), 'Square')
+                                                self.line_button.y(), 'Square', 'Q')
 
         self.circle_button = self.create_button(self.line_button.x(),
                                                 self.line_button.y() + self.line_button.height() + button_shift,
-                                                'Circle')
+                                                'Circle', 'C')
 
-        self.triangle_button = self.create_button(self.square_button.x(), self.circle_button.y(), 'Triangle')
+        self.triangle_button = self.create_button(self.square_button.x(), self.circle_button.y(), 'Triangle', 'T')
 
         self.show()
 
@@ -128,13 +132,22 @@ class VanillaWindow(QMainWindow):
         # copy_action.setShortcut('Ctrl+C')
         # edit_menu.addAction(copy_action)
 
-    def create_button(self, x, y, image):
+    def create_button(self, x, y, image, shortcut='', function=lambda:None):
         button = QPushButton('', self)
         button.setGeometry(x, y, self.BUTTON_SIZE, self.BUTTON_SIZE)
         button.setStyleSheet('background: transparent;')
+        button.setShortcut(shortcut)
+        button.setToolTip(f'{image} ({shortcut})')
+        button.clicked.connect(function)
         self.button_images[button] = QImage(f'images/{image}.png')
         button.show()
         return button
+
+    def eraser_button_clicked(self):
+        self.canvas.choose_eraser()
+
+    def brush_button_clicked(self):
+        self.canvas.choose_brush()
 
     def size_edited(self, size):
         if size == '':

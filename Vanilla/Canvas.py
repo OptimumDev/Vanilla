@@ -1,5 +1,6 @@
 import math
 from Color import Color
+from Tools import Tools
 
 
 class Canvas:
@@ -16,6 +17,7 @@ class Canvas:
         self.changed_pixels = [(x, y) for x in range(width) for y in range(height)]
         self.current_color = self.STANDARD_COLOR
         self.brush_size = self.STANDARD_BRUSH_SIZE
+        self.current_tool = Tools.BRUSH
 
     @staticmethod
     def get_distance(x1, y1, x2, y2):
@@ -26,8 +28,14 @@ class Canvas:
             for dy in range(1 - self.brush_size, self.brush_size):
                 if 0 <= x + dx < len(self.pixels) and 0 <= y + dy < len(self.pixels[0]) and \
                         self.get_distance(x, y, x + dx, y + dy) <= self.brush_size:
-                    self.pixels[x + dx][y + dy] = self.current_color
+                    self.pixels[x + dx][y + dy] = Color() if self.current_tool == Tools.ERASER else self.current_color
                     self.changed_pixels.append((x + dx, y + dy))
 
     def change_color(self, red, green, blue):
         self.current_color = Color(red, green, blue)
+
+    def choose_eraser(self):
+        self.current_tool = Tools.ERASER
+
+    def choose_brush(self):
+        self.current_tool = Tools.BRUSH
