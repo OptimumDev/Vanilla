@@ -3,6 +3,7 @@ from PyQt5.QtGui import QPainter, QImage, QColor, QIcon, QCursor, QPixmap, QFont
 from PyQt5.Qt import Qt
 from SizeDialog import SizeDialog
 from Canvas import Canvas
+from Color import Color
 import math
 
 
@@ -112,6 +113,7 @@ class VanillaWindow(QMainWindow):
 
         open_action = QAction('&Open', self)
         open_action.setShortcut('Ctrl+O')
+        open_action.triggered.connect(self.open)
         file_menu.addAction(open_action)
 
         file_menu.addSeparator()
@@ -211,6 +213,24 @@ class VanillaWindow(QMainWindow):
             y = 0
         return image
 
+    def open(self):
+        load_file_name = QFileDialog.getOpenFileName(self, 'Chose Image File', '',
+                                                     'PNG Files (*.png);;JPG Files (*.jpg);;BMP Files (*.bmp)')[0]
+        if load_file_name == '':
+            return False
+        self.picture_name = load_file_name
+        image = QImage(load_file_name)
+        self.create_canvas(image.width(), image.height())
+        for x in range(self.canvas.width):
+            for y in range(self.canvas.height):
+                color = image.pixelColor(x, y)
+                if color.alpha() == 0:
+                    color = QColor(255, 255, 255)
+                self.canvas.pixels[x][y] = Color(color.red(), color.green(), color.blue())
+        self.update_canvas()
+        self.to_draw_canvas = True
+        self.update()
+
     def save(self):
         if self.picture_name is None:
             self.save_as()
@@ -252,11 +272,14 @@ class VanillaWindow(QMainWindow):
             self.setCursor(Qt.ArrowCursor)
         if self.mouse_pressed:
             self.canvas.paint(*self.cursor_position)
-            while len(self.canvas.changed_pixels) > 0:
-                x, y = self.canvas.changed_pixels.pop()
-                pixel = self.canvas.pixels[x][y]
-                self.canvas_as_image.setPixelColor(x, y, QColor(pixel.r, pixel.g, pixel.b))
+            self.update_canvas()
             self.update()
+
+    def update_canvas(self):
+        while len(self.canvas.changed_pixels) > 0:
+            x, y = self.canvas.changed_pixels.pop()
+            pixel = self.canvas.pixels[x][y]
+            self.canvas_as_image.setPixelColor(x, y, QColor(pixel.r, pixel.g, pixel.b))
 
     def mousePressEvent(self, event):
         if self.cursor_on_canvas and event.button() == Qt.LeftButton:
