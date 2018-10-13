@@ -4,6 +4,7 @@ from PyQt5.Qt import Qt
 from SizeDialog import SizeDialog
 from Canvas import Canvas
 from Color import Color
+from Tools import Tools
 import math
 
 
@@ -18,11 +19,13 @@ class VanillaWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.to_draw_canvas = False
+        self.to_draw_line = False
         self.cursor_on_canvas = False
         self.mouse_pressed = False
         self.picture_name = None
         self.canvas = Canvas()
         self.button_images = {}
+        self.buttons = {}
         self.initUI()
 
     def initUI(self):
@@ -72,30 +75,33 @@ class VanillaWindow(QMainWindow):
                                     self.size_slider.width() + self.size_edit.width() + 5, 30)
         self.size_label.show()
 
-        button_shift = 30
-        self.brush_button = self.create_button(20, self.MENU_BAR_HEIGHT + 10, 'Brush', 'B', self.brush_button_clicked)
-        self.brush_button.setShortcut('B')
-        self.brush_button.setToolTip('Brush (B)')
+        brush_button = self.create_button(20, self.MENU_BAR_HEIGHT + 10, 'Brush', 'B', self.brush_button_clicked)
+        self.buttons[Tools.BRUSH] = brush_button
 
-        self.eraser_button = self.create_button(self.brush_button.x() + self.brush_button.width() + button_shift,
-                                                self.brush_button.y(), 'Eraser', 'E', self.eraser_button_clicked)
+        eraser_button = self.create_button(brush_button.x() + brush_button.width() + self.MENU_BAR_HEIGHT,
+                                           brush_button.y(), 'Eraser', 'E', self.eraser_button_clicked)
+        self.buttons[Tools.ERASER] = eraser_button
 
-        self.fill_button = self.create_button(self.brush_button.x(),
-                                              self.brush_button.y() + self.brush_button.height() + button_shift,
-                                              'Fill', 'F')
+        fill_button = self.create_button(brush_button.x(),
+                                         brush_button.y() + brush_button.height() + self.MENU_BAR_HEIGHT, 'Fill', 'F')
+        self.buttons[Tools.FILL] = fill_button
 
-        self.selection_button = self.create_button(self.eraser_button.x(), self.fill_button.y(), 'Selection', 'S')
+        selection_button = self.create_button(eraser_button.x(), fill_button.y(), 'Selection', 'S')
+        self.buttons[Tools.SELECTION] = selection_button
 
-        self.line_button = self.create_button(20, 300, 'Line', 'L')
+        line_button = self.create_button(20, 300, 'Line', 'L', self.line_button_clicked)
+        self.buttons[Tools.LINE] = line_button
 
-        self.square_button = self.create_button(self.line_button.x() + self.line_button.width() + button_shift,
-                                                self.line_button.y(), 'Square', 'Q')
+        square_button = self.create_button(line_button.x() + line_button.width() + self.MENU_BAR_HEIGHT,
+                                           line_button.y(), 'Square', 'Q')
+        self.buttons[Tools.SQUARE] = square_button
 
-        self.circle_button = self.create_button(self.line_button.x(),
-                                                self.line_button.y() + self.line_button.height() + button_shift,
-                                                'Circle', 'C')
+        circle_button = self.create_button(line_button.x(),
+                                           line_button.y() + line_button.height() + self.MENU_BAR_HEIGHT, 'Circle', 'C')
+        self.buttons[Tools.CIRCLE] = circle_button
 
-        self.triangle_button = self.create_button(self.square_button.x(), self.circle_button.y(), 'Triangle', 'T')
+        triangle_button = self.create_button(square_button.x(), circle_button.y(), 'Triangle', 'T')
+        self.buttons[Tools.TRIANGLE] = triangle_button
 
         self.show()
 
@@ -104,7 +110,6 @@ class VanillaWindow(QMainWindow):
         self.menu_bar.setStyleSheet('selection-background-color: #202020; background: #393939; color: lightGray;')
 
         file_menu = self.menu_bar.addMenu('&File')
-        # edit_menu = self.menu_bar.addMenu('&Edit')
 
         new_action = QAction('&New', self)
         new_action.setShortcut('Ctrl+N')
@@ -130,26 +135,28 @@ class VanillaWindow(QMainWindow):
         self.save_as_action.setDisabled(True)
         file_menu.addAction(self.save_as_action)
 
-        # copy_action = QAction('&Copy', self)
-        # copy_action.setShortcut('Ctrl+C')
-        # edit_menu.addAction(copy_action)
-
-    def create_button(self, x, y, image, shortcut='', function=lambda:None):
+    def create_button(self, x, y, image, shortcut='', action=lambda: None):
         button = QPushButton('', self)
         button.setGeometry(x, y, self.BUTTON_SIZE, self.BUTTON_SIZE)
         button.setStyleSheet('background: transparent;')
         button.setShortcut(shortcut)
         button.setToolTip(f'{image} ({shortcut})')
-        button.clicked.connect(function)
+        button.clicked.connect(action)
         self.button_images[button] = QImage(f'images/{image}.png')
         button.show()
         return button
 
     def eraser_button_clicked(self):
         self.canvas.choose_eraser()
+        self.update()
 
     def brush_button_clicked(self):
         self.canvas.choose_brush()
+        self.update()
+
+    def line_button_clicked(self):
+        self.canvas.choose_line()
+        self.update()
 
     def size_edited(self, size):
         if size == '':
@@ -172,8 +179,9 @@ class VanillaWindow(QMainWindow):
 
     def pick_color(self):
         color = QColorDialog.getColor()
-        self.canvas.change_color(color.red(), color.green(), color.blue())
-        self.color_picker.setStyleSheet(f'background: {color.name()}')
+        if color.isValid():
+            self.canvas.change_color(color.red(), color.green(), color.blue())
+            self.color_picker.setStyleSheet(f'background: {color.name()}')
 
     def ask_size(self):
         success, width, height = SizeDialog.get_size(self)
@@ -195,7 +203,7 @@ class VanillaWindow(QMainWindow):
             self.canvas_height = max_size
         self.pixel_size = self.canvas_width / self.canvas.width
         self.canvas_left_side = (self.width() - self.canvas_width) / 2
-        self.canvas_upper_size = (self.height() - self.canvas_height) / 2
+        self.canvas_upper_side = (self.height() - self.canvas_height) / 2
         self.canvas_as_image = self.convert_to_image()
         self.to_draw_canvas = True
         self.save_action.setDisabled(False)
@@ -251,8 +259,7 @@ class VanillaWindow(QMainWindow):
         cursor.fill(Qt.transparent)
         painter = QPainter()
         painter.begin(cursor)
-        painter.drawEllipse(0, 0,
-                            size - 1, size - 1)
+        painter.drawEllipse(0, 0, size - 1, size - 1)
         painter.drawLine(size / 2, size / 4, size / 2, size / 4 * 3)
         painter.drawLine(size / 4, size / 2, size / 4 * 3, size / 2)
         painter.end()
@@ -262,7 +269,7 @@ class VanillaWindow(QMainWindow):
         if not self.to_draw_canvas:
             return
         x = math.floor((event.pos().x() - self.canvas_left_side) / self.pixel_size)
-        y = math.floor((event.pos().y() - self.canvas_upper_size) / self.pixel_size)
+        y = math.floor((event.pos().y() - self.canvas_upper_side) / self.pixel_size)
         if 0 <= x < self.canvas.width and 0 <= y < self.canvas.height:
             self.cursor_position = (x, y)
             self.cursor_on_canvas = True
@@ -271,11 +278,17 @@ class VanillaWindow(QMainWindow):
             self.cursor_on_canvas = False
             self.setCursor(Qt.ArrowCursor)
         if self.mouse_pressed:
-            self.canvas.paint(*self.cursor_position)
+            self.move_tools()
             self.update_canvas()
             self.update()
 
+    def move_tools(self):
+        if self.canvas.current_tool == Tools.BRUSH:
+            self.canvas.paint(*self.cursor_position)
+
     def update_canvas(self):
+        if not self.to_draw_canvas:
+            return
         while len(self.canvas.changed_pixels) > 0:
             x, y = self.canvas.changed_pixels.pop()
             pixel = self.canvas.pixels[x][y]
@@ -284,31 +297,63 @@ class VanillaWindow(QMainWindow):
     def mousePressEvent(self, event):
         if self.cursor_on_canvas and event.button() == Qt.LeftButton:
             self.mouse_pressed = True
+            self.press_tools()
+
+    def press_tools(self):
+        if self.canvas.current_tool == Tools.BRUSH:
             self.canvas.paint(*self.cursor_position)
+        elif self.canvas.current_tool == Tools.LINE:
+            self.to_draw_line = True
+            self.line_start = self.cursor_position
 
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.LeftButton:
+            self.release_tools()
+            self.update_canvas()
+            self.update()
             self.mouse_pressed = False
+
+    def release_tools(self):
+        if self.canvas.current_tool == Tools.LINE:
+            self.to_draw_line = False
+            self.canvas.draw_line(*self.line_start, *self.cursor_position)
 
     def paintEvent(self, event):
         painter = QPainter()
         painter.begin(self)
         if self.to_draw_canvas:
             self.draw_pixels(painter)
+        if self.to_draw_line:
+            self.draw_line(painter)
         painter.drawImage(0, self.menu_bar.height(), QImage('images/ToolBar.png'))
+        self.highlight_current_button(painter)
         self.draw_buttons(painter)
         painter.end()
 
+    def highlight_current_button(self, painter):
+        painter.setBrush(QColor(255, 255, 255))
+        button = self.buttons[self.canvas.current_tool]
+        painter.drawRect(button.x(), button.y(), self.BUTTON_SIZE, self.BUTTON_SIZE)
+
+    def draw_line(self, painter):
+        start_x, start_y = self.line_start
+        end_x, end_y = self.cursor_position
+        start_x = start_x * self.pixel_size + self.canvas_left_side + self.pixel_size / 2
+        start_y = start_y * self.pixel_size + self.canvas_upper_side + self.pixel_size / 2
+        end_x = end_x * self.pixel_size + self.canvas_left_side + self.pixel_size / 2
+        end_y = end_y * self.pixel_size + self.canvas_upper_side + self.pixel_size / 2
+        painter.drawLine(start_x, start_y, end_x, end_y)
+
     def draw_pixels(self, painter):
-        painter.drawImage(self.canvas_left_side, self.canvas_upper_size,
+        painter.drawImage(self.canvas_left_side, self.canvas_upper_side,
                           self.canvas_as_image.scaled(self.canvas_width, self.canvas_height))
         if self.canvas.width < 100 and self.canvas.height < 100:
             for i in range(self.canvas.width + 1):
                 x = self.canvas_left_side + i * self.pixel_size
-                painter.drawLine(x, self.canvas_upper_size,
-                                 x, self.canvas_upper_size + self.canvas_height)
+                painter.drawLine(x, self.canvas_upper_side,
+                                 x, self.canvas_upper_side + self.canvas_height)
             for i in range(self.canvas.height + 1):
-                y = self.canvas_upper_size + i * self.pixel_size
+                y = self.canvas_upper_side + i * self.pixel_size
                 painter.drawLine(self.canvas_left_side, y,
                                  self.canvas_left_side + self.canvas_width, y)
 
