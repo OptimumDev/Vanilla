@@ -22,6 +22,8 @@ class VanillaWindow(QMainWindow):
         self.to_draw_canvas = False
         self.to_draw_line = False
         self.to_draw_square = False
+        self.to_draw_triangle = False
+        self.to_draw_circle = False
         self.cursor_on_canvas = False
         self.mouse_pressed = False
         self.picture_name = None
@@ -99,10 +101,12 @@ class VanillaWindow(QMainWindow):
         self.buttons[Tools.SQUARE] = square_button
 
         circle_button = self.create_button(line_button.x(),
-                                           line_button.y() + line_button.height() + self.MENU_BAR_HEIGHT, 'Circle', 'C')
+                                           line_button.y() + line_button.height() + self.MENU_BAR_HEIGHT, 'Circle', 'C',
+                                           self.circle_button_clicked)
         self.buttons[Tools.CIRCLE] = circle_button
 
-        triangle_button = self.create_button(square_button.x(), circle_button.y(), 'Triangle', 'T')
+        triangle_button = self.create_button(square_button.x(), circle_button.y(), 'Triangle', 'T',
+                                             self.triangle_button_clicked)
         self.buttons[Tools.TRIANGLE] = triangle_button
 
         self.vertical_scrollbar = QScrollBar(self)
@@ -170,6 +174,14 @@ class VanillaWindow(QMainWindow):
 
     def square_button_clicked(self):
         self.canvas.choose_square()
+        self.update()
+
+    def triangle_button_clicked(self):
+        self.canvas.choose_triangle()
+        self.update()
+
+    def circle_button_clicked(self):
+        self.canvas.choose_circle()
         self.update()
 
     def size_edited(self, size):
@@ -314,7 +326,7 @@ class VanillaWindow(QMainWindow):
             self.press_tools()
 
     def press_tools(self):
-        if self.canvas.current_tool in [Tools.LINE, Tools.SQUARE]:
+        if self.canvas.current_tool in [Tools.LINE, Tools.SQUARE, Tools.TRIANGLE, Tools.CIRCLE]:
             self.shape_start = self.cursor_position
         if self.canvas.current_tool == Tools.BRUSH:
             self.canvas.paint(*self.cursor_position)
@@ -322,6 +334,10 @@ class VanillaWindow(QMainWindow):
             self.to_draw_line = True
         elif self.canvas.current_tool == Tools.SQUARE:
             self.to_draw_square = True
+        elif self.canvas.current_tool == Tools.TRIANGLE:
+            self.to_draw_triangle = True
+        elif self.canvas.current_tool == Tools.CIRCLE:
+            self.to_draw_circle = True
 
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.LeftButton:
@@ -337,6 +353,12 @@ class VanillaWindow(QMainWindow):
         elif self.canvas.current_tool == Tools.SQUARE:
             self.to_draw_square = False
             self.canvas.draw_square(*self.shape_start, *self.cursor_position)
+        elif self.canvas.current_tool == Tools.TRIANGLE:
+            self.to_draw_triangle = False
+            self.canvas.draw_triangle(*self.shape_start, *self.cursor_position)
+        elif self.canvas.current_tool == Tools.CIRCLE:
+            self.to_draw_circle = False
+            self.canvas.draw_circle(*self.shape_start, *self.cursor_position)
 
     def wheelEvent(self, event):
         delta = event.angleDelta().y() / 120
@@ -360,6 +382,10 @@ class VanillaWindow(QMainWindow):
             self.draw_line(painter)
         if self.to_draw_square:
             self.draw_square(painter)
+        if self.to_draw_triangle:
+            self.draw_triangle(painter)
+        if self.to_draw_circle:
+            self.draw_ellipse(painter)
         painter.drawImage(0, self.menu_bar.height(), QImage('images/ToolBar.png'))
         self.highlight_current_button(painter)
         self.draw_buttons(painter)
@@ -385,10 +411,28 @@ class VanillaWindow(QMainWindow):
 
     def draw_square(self, painter):
         start_x, start_y, end_x, end_y = self.get_start_end_position()
-        painter.drawLine(start_x, start_y, end_x, start_y)
-        painter.drawLine(start_x, end_y, end_x, end_y)
-        painter.drawLine(start_x, start_y, start_x, end_y)
-        painter.drawLine(end_x, start_y, end_x, end_y)
+        left = min(start_x, end_x)
+        up = min(start_y, end_y)
+        painter.drawRect(left, up, abs(end_x - start_x), abs(end_y - start_y))
+
+    def draw_triangle(self, painter):
+        start_x, start_y, end_x, end_y = self.get_start_end_position()
+        left = min(start_x, end_x)
+        right = max(start_x, end_x)
+        up = min(start_y, end_y)
+        down = max(start_y, end_y)
+        width = right - left
+        left_up = left + width // 2
+        right_up = left_up + (width % 2)
+        painter.drawLine(left_up, up, left, down)
+        painter.drawLine(right_up, up, right, down)
+        painter.drawLine(left, down, right, down)
+
+    def draw_ellipse(self, painter):
+        start_x, start_y, end_x, end_y = self.get_start_end_position()
+        left = min(start_x, end_x)
+        up = min(start_y, end_y)
+        painter.drawEllipse(left, up, abs(end_x - start_x), abs(end_y - start_y))
 
     def draw_pixels(self, painter):
         painter.drawImage(self.canvas_left_side, self.canvas_upper_side,

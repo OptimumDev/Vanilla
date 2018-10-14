@@ -78,6 +78,63 @@ class Canvas:
             self.paint_pixel(start_x, up + y)
             self.paint_pixel(end_x, up + y)
 
+    def draw_triangle(self, start_x, start_y, end_x, end_y):
+        left = min(start_x, end_x)
+        right = max(start_x, end_x)
+        up = min(start_y, end_y)
+        down = max(start_y, end_y)
+        width = right - left
+        left_up = left + width // 2
+        right_up = left_up + (width % 2)
+        self.draw_line(left_up, up, left, down)
+        self.draw_line(right_up, up, right, down)
+        self.draw_line(left, down, right, down)
+
+    def draw_circle(self, start_x, start_y, end_x, end_y):
+        left = min(start_x, end_x)
+        right = max(start_x, end_x)
+        up = min(start_y, end_y)
+        down = max(start_y, end_y)
+        width = right - left
+        height = down - up
+        left_center = left + width // 2
+        right_center = left_center + (width % 2)
+        up_center = up + height // 2
+        down_center = up_center + (height % 2)
+        self.build_circle(left_center, right_center, up_center, down_center, width // 2, height // 2)
+
+    def build_circle(self, left_center, right_center, up_center, down_center, a_radius, b_radius):
+        a_sqr = a_radius ** 2
+        b_sqr = b_radius ** 2
+        four_a_sqr = 4 * a_sqr
+        four_b_sqr = 4 * b_sqr
+        x = 0
+        y = b_radius
+        delta = 2 * b_sqr + a_sqr * (1 - 2 * b_radius)
+        while b_sqr * x < a_sqr * y:
+            self.paint_pixel(right_center + x, up_center - y)
+            self.paint_pixel(right_center + x, down_center + y)
+            self.paint_pixel(left_center - x, down_center + y)
+            self.paint_pixel(left_center - x, up_center - y)
+            if delta >= 0:
+                delta += four_a_sqr * (1 - y)
+                y -= 1
+            delta += b_sqr * (4 * x + 6)
+            x += 1
+        x = a_radius
+        y = 0
+        delta = 2 * a_sqr + b_sqr * (1 - 2 * a_radius)
+        while a_sqr * y <= b_sqr * x:
+            self.paint_pixel(right_center + x, up_center - y)
+            self.paint_pixel(right_center + x, down_center + y)
+            self.paint_pixel(left_center - x, down_center + y)
+            self.paint_pixel(left_center - x, up_center - y)
+            if delta >= 0:
+                delta += four_b_sqr * (1 - x)
+                x -= 1
+            delta += a_sqr * (4 * y + 6)
+            y += 1
+
     def change_color(self, red, green, blue):
         self.current_color = Color(red, green, blue)
 
@@ -92,3 +149,9 @@ class Canvas:
 
     def choose_square(self):
         self.current_tool = Tools.SQUARE
+
+    def choose_triangle(self):
+        self.current_tool = Tools.TRIANGLE
+
+    def choose_circle(self):
+        self.current_tool = Tools.CIRCLE
