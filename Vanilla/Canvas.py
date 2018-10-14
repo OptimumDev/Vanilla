@@ -66,6 +66,18 @@ class Canvas:
                 y += sign_y
             self.paint_pixel(x, y)
 
+    def draw_square(self, start_x, start_y, end_x, end_y):
+        left = min(start_x, end_x)
+        up = min(start_y, end_y)
+        width = abs(end_x - start_x)
+        height = abs(end_y - start_y)
+        for x in range(width + 1):
+            self.paint_pixel(left + x, start_y)
+            self.paint_pixel(left + x, end_y)
+        for y in range(height):
+            self.paint_pixel(start_x, up + y)
+            self.paint_pixel(end_x, up + y)
+
     def change_color(self, red, green, blue):
         self.current_color = Color(red, green, blue)
 
@@ -77,3 +89,6 @@ class Canvas:
 
     def choose_line(self):
         self.current_tool = Tools.LINE
+
+    def choose_square(self):
+        self.current_tool = Tools.SQUARE
