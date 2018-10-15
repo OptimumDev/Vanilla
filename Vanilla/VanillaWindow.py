@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QMainWindow, QAction, QColorDialog, QPushButton, QFileDialog, QSlider, QLabel, QLineEdit, \
-    QScrollBar, QDesktopWidget, QScrollArea, QWidget, QBoxLayout, QVBoxLayout
-from PyQt5.QtGui import QPainter, QImage, QColor, QIcon, QCursor, QPixmap, QFont, QIntValidator, QPen
+    QScrollBar, QDesktopWidget
+from PyQt5.QtGui import QPainter, QImage, QColor, QIcon, QCursor, QPixmap, QFont, QIntValidator, QBrush
 from PyQt5.Qt import Qt
 from SizeDialog import SizeDialog
 from Canvas import Canvas
@@ -288,6 +288,8 @@ class VanillaWindow(QMainWindow):
     def change_cursor(self):
         if self.canvas.current_tool == Tools.BRUSH:
             self.setCursor(self.get_brush_cursor())
+        elif self.canvas.current_tool == Tools.ERASER:
+            self.setCursor(self.get_eraser_cursor())
         elif self.canvas.current_tool == Tools.FILL:
             self.setCursor(self.get_fill_cursor())
 
@@ -301,6 +303,17 @@ class VanillaWindow(QMainWindow):
         painter.drawEllipse(0, 0, size - 1, size - 1)
         painter.drawLine(size / 2, size / 4, size / 2, size / 4 * 3)
         painter.drawLine(size / 4, size / 2, size / 4 * 3, size / 2)
+        painter.end()
+        return QCursor(cursor)
+
+    def get_eraser_cursor(self):
+        size = (2 * self.canvas.brush_size - 1) * self.pixel_size
+        cursor = QPixmap(size, size)
+        cursor.fill(Qt.transparent)
+        painter = QPainter()
+        painter.begin(cursor)
+        painter.setBrush(QBrush(QColor(255, 255, 255)))
+        painter.drawEllipse(0, 0, size - 1, size - 1)
         painter.end()
         return QCursor(cursor)
 
@@ -323,8 +336,8 @@ class VanillaWindow(QMainWindow):
         y = math.floor((event.pos().y() - self.canvas_upper_side) / self.pixel_size)
         if 0 <= x < self.canvas.width and 0 <= y < self.canvas.height:
             self.cursor_position = (x, y)
-            self.cursor_on_canvas = True
             self.change_cursor()
+            self.cursor_on_canvas = True
         else:
             if not self.mouse_pressed:
                 self.shape_start = None
@@ -336,7 +349,7 @@ class VanillaWindow(QMainWindow):
             self.update()
 
     def move_tools(self):
-        if self.canvas.current_tool == Tools.BRUSH:
+        if self.canvas.current_tool in [Tools.BRUSH, Tools.ERASER]:
             self.canvas.paint(*self.cursor_position)
 
     def update_canvas(self):
@@ -355,7 +368,7 @@ class VanillaWindow(QMainWindow):
     def press_tools(self):
         if self.canvas.current_tool in [Tools.LINE, Tools.SQUARE, Tools.TRIANGLE, Tools.CIRCLE]:
             self.shape_start = self.cursor_position
-        if self.canvas.current_tool == Tools.BRUSH:
+        if self.canvas.current_tool in [Tools.BRUSH, Tools.ERASER]:
             self.canvas.paint(*self.cursor_position)
         elif self.canvas.current_tool == Tools.LINE:
             self.to_draw_line = True
@@ -409,6 +422,7 @@ class VanillaWindow(QMainWindow):
         painter.begin(self)
         if self.to_draw_canvas:
             self.draw_pixels(painter)
+        painter.setPen(QColor(self.canvas.current_color.r, self.canvas.current_color.g, self.canvas.current_color.b))
         if self.to_draw_line:
             self.draw_line(painter)
         if self.to_draw_rectangle:
