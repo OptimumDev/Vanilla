@@ -16,6 +16,7 @@ class VanillaWindow(QMainWindow):
     TOOLBAR_HEIGHT = 791
     BUTTON_SIZE = 64
     MENU_BAR_HEIGHT = 30
+    MINIMUM_CANVAST_LEFT_SHIFT = 250
 
     def __init__(self):
         super().__init__()
@@ -111,13 +112,17 @@ class VanillaWindow(QMainWindow):
                                              self.triangle_button_clicked)
         self.buttons[Tools.TRIANGLE] = triangle_button
 
-        self.vertical_scrollbar = QScrollBar(self)
-        self.horizontal_scrollbar = QScrollBar(Qt.Horizontal, self)
         width = QDesktopWidget().width()
         height = QDesktopWidget().height() - 64
         size = 20
+
+        self.vertical_scrollbar = QScrollBar(self)
         self.vertical_scrollbar.setGeometry(width - size, 0, size, height - size)
+        self.vertical_scrollbar.valueChanged[int].connect(self.vertical_scrollbar_value_changed)
+        
+        self.horizontal_scrollbar = QScrollBar(Qt.Horizontal, self)
         self.horizontal_scrollbar.setGeometry(0, height - size, width - size, size)
+        self.horizontal_scrollbar.valueChanged[int].connect(self.horizontal_scrollbar_value_changed)
 
         self.show()
 
@@ -190,6 +195,20 @@ class VanillaWindow(QMainWindow):
         self.canvas.choose_fill()
         self.update()
 
+    def horizontal_scrollbar_value_changed(self, value):
+        self.update()
+
+    def vertical_scrollbar_value_changed(self, value):
+        self.update()
+
+    @property
+    def canvas_left_side(self):
+        return self.canvas_left_edge - self.horizontal_scrollbar.value()
+
+    @property
+    def canvas_upper_side(self):
+        return self.canvas_upper_edge - self.vertical_scrollbar.value()
+
     def size_edited(self, size):
         if size == '':
             value = 1
@@ -234,8 +253,8 @@ class VanillaWindow(QMainWindow):
             self.canvas_width = max_size * proportion
             self.canvas_height = max_size
         self.pixel_size = self.canvas_width / self.canvas.width
-        self.canvas_left_side = (self.width() - self.canvas_width) / 2
-        self.canvas_upper_side = (self.height() - self.canvas_height) / 2
+        self.canvas_left_edge = (self.width() - self.canvas_width) / 2
+        self.canvas_upper_edge = (self.height() - self.canvas_height) / 2
         self.canvas_as_image = self.convert_to_image()
         self.to_draw_canvas = True
         self.save_action.setDisabled(False)
@@ -405,6 +424,8 @@ class VanillaWindow(QMainWindow):
             self.canvas.draw_ellipse(*self.shape_start, *self.cursor_position)
 
     def wheelEvent(self, event):
+        if not self.to_draw_canvas:
+            return
         delta = event.angleDelta().y() / 120
         old_width = self.canvas_width
         old_height = self.canvas_height
@@ -412,10 +433,24 @@ class VanillaWindow(QMainWindow):
             self.pixel_size += delta
             self.canvas_width = self.canvas.width * self.pixel_size
             self.canvas_height = self.canvas.height * self.pixel_size
-            self.canvas_left_side += (old_width - self.canvas_width) / 2
-            self.canvas_upper_side += (old_height - self.canvas_height) / 2
+            self.canvas_left_edge += (old_width - self.canvas_width) / 2
+            self.canvas_upper_edge += (old_height - self.canvas_height) / 2
             self.change_cursor()
             self.update()
+        if self.canvas_left_edge < self.MINIMUM_CANVAST_LEFT_SHIFT:
+            max = self.MINIMUM_CANVAST_LEFT_SHIFT - self.canvas_left_edge
+            self.horizontal_scrollbar.setMaximum(max)
+            self.horizontal_scrollbar.setMinimum(-max)
+            self.horizontal_scrollbar.show()
+        else:
+            self.horizontal_scrollbar.hide()
+        if self.canvas_upper_edge < self.MENU_BAR_HEIGHT:
+            max = self.MENU_BAR_HEIGHT - self.canvas_upper_edge
+            self.vertical_scrollbar.setMinimum(-max)
+            self.vertical_scrollbar.setMaximum(max)
+            self.vertical_scrollbar.show()
+        else:
+            self.vertical_scrollbar.hide()
 
     def paintEvent(self, event):
         painter = QPainter()
