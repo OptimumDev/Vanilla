@@ -66,7 +66,7 @@ class Canvas:
                 y += sign_y
             self.paint_pixel(x, y)
 
-    def draw_square(self, start_x, start_y, end_x, end_y):
+    def draw_rectangle(self, start_x, start_y, end_x, end_y):
         left = min(start_x, end_x)
         up = min(start_y, end_y)
         width = abs(end_x - start_x)
@@ -90,7 +90,7 @@ class Canvas:
         self.draw_line(right_up, up, right, down)
         self.draw_line(left, down, right, down)
 
-    def draw_circle(self, start_x, start_y, end_x, end_y):
+    def draw_ellipse(self, start_x, start_y, end_x, end_y):
         left = min(start_x, end_x)
         right = max(start_x, end_x)
         up = min(start_y, end_y)
@@ -101,9 +101,9 @@ class Canvas:
         right_center = left_center + (width % 2)
         up_center = up + height // 2
         down_center = up_center + (height % 2)
-        self.build_circle(left_center, right_center, up_center, down_center, width // 2, height // 2)
+        self.build_ellipse(left_center, right_center, up_center, down_center, width // 2, height // 2)
 
-    def build_circle(self, left_center, right_center, up_center, down_center, a_radius, b_radius):
+    def build_ellipse(self, left_center, right_center, up_center, down_center, a_radius, b_radius):
         a_sqr = a_radius ** 2
         b_sqr = b_radius ** 2
         four_a_sqr = 4 * a_sqr
@@ -135,6 +135,17 @@ class Canvas:
             delta += a_sqr * (4 * y + 6)
             y += 1
 
+    def fill(self, x, y):
+        color = self.pixels[x][y]
+        queue = [(x, y)]
+        while len(queue) > 0:
+            cur_x, cur_y = queue.pop()
+            if not (0 <= cur_x < self.width and 0 <= cur_y < self.height) or self.pixels[cur_x][cur_y] != color:
+                continue
+            self.paint_pixel(cur_x, cur_y)
+            for near_pos in [(cur_x, cur_y - 1), (cur_x + 1, cur_y), (cur_x, cur_y + 1), (cur_x - 1, cur_y)]:
+                queue.append(near_pos)
+
     def change_color(self, red, green, blue):
         self.current_color = Color(red, green, blue)
 
@@ -147,11 +158,14 @@ class Canvas:
     def choose_line(self):
         self.current_tool = Tools.LINE
 
-    def choose_square(self):
+    def choose_rectangle(self):
         self.current_tool = Tools.SQUARE
 
     def choose_triangle(self):
         self.current_tool = Tools.TRIANGLE
 
-    def choose_circle(self):
+    def choose_ellipse(self):
         self.current_tool = Tools.CIRCLE
+
+    def choose_fill(self):
+        self.current_tool = Tools.FILL
