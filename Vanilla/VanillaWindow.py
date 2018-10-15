@@ -119,7 +119,7 @@ class VanillaWindow(QMainWindow):
         self.vertical_scrollbar = QScrollBar(self)
         self.vertical_scrollbar.setGeometry(width - size, 0, size, height - size)
         self.vertical_scrollbar.valueChanged[int].connect(self.vertical_scrollbar_value_changed)
-        
+
         self.horizontal_scrollbar = QScrollBar(Qt.Horizontal, self)
         self.horizontal_scrollbar.setGeometry(0, height - size, width - size, size)
         self.horizontal_scrollbar.valueChanged[int].connect(self.horizontal_scrollbar_value_changed)
@@ -155,6 +155,17 @@ class VanillaWindow(QMainWindow):
         self.save_as_action.triggered.connect(self.save_as)
         self.save_as_action.setDisabled(True)
         file_menu.addAction(self.save_as_action)
+
+        image_menu = self.menu_bar.addMenu('&Image')
+
+        self.greyscale_action = QAction('Grayscale', self)
+        self.greyscale_action.setShortcut('Ctrl+G')
+        self.greyscale_action.setCheckable(True)
+        self.greyscale_action.triggered.connect(self.change_greyscale)
+        self.greyscale_action.setDisabled(True)
+        image_menu.addAction(self.greyscale_action)
+
+
 
     def create_button(self, x, y, image, shortcut='', action=lambda: None):
         button = QPushButton('', self)
@@ -201,6 +212,15 @@ class VanillaWindow(QMainWindow):
     def vertical_scrollbar_value_changed(self, value):
         self.update()
 
+    def change_greyscale(self):
+        if self.greyscale_action.isChecked():
+            self.canvas.turn_grey_scale_on()
+        else:
+            self.canvas.turn_grey_scale_off()
+        self.update_canvas()
+        self.update_color_button()
+        self.update()
+
     @property
     def canvas_left_side(self):
         return self.canvas_left_edge - self.horizontal_scrollbar.value()
@@ -232,7 +252,12 @@ class VanillaWindow(QMainWindow):
         color = QColorDialog.getColor()
         if color.isValid():
             self.canvas.change_color(color.red(), color.green(), color.blue())
-            self.color_picker.setStyleSheet(f'background: {color.name()}')
+            self.update_color_button()
+
+    def update_color_button(self):
+        cur_color = self.canvas.current_color
+        color = QColor(cur_color.r, cur_color.g, cur_color.b)
+        self.color_picker.setStyleSheet(f'background: {color.name()}')
 
     def ask_size(self):
         success, width, height = SizeDialog.get_size(self)
@@ -242,7 +267,7 @@ class VanillaWindow(QMainWindow):
     def create_canvas(self, width, height):
         old_canvas = self.canvas
         self.canvas = Canvas(width, height)
-        self.canvas.current_color = old_canvas.current_color
+        self.canvas.current_color_rgb = old_canvas.current_color_rgb
         self.canvas.brush_size = old_canvas.brush_size
         max_size = self.height() - self.SHIFT * 2
         proportion = width / height
@@ -259,6 +284,8 @@ class VanillaWindow(QMainWindow):
         self.to_draw_canvas = True
         self.save_action.setDisabled(False)
         self.save_as_action.setDisabled(False)
+        self.greyscale_action.setChecked(False)
+        self.greyscale_action.setDisabled(False)
 
     def convert_to_image(self):
         image = QImage(self.canvas.width, self.canvas.height, QImage.Format_RGB888)
@@ -376,7 +403,7 @@ class VanillaWindow(QMainWindow):
             return
         while len(self.canvas.changed_pixels) > 0:
             x, y = self.canvas.changed_pixels.pop()
-            pixel = self.canvas.pixels[x][y]
+            pixel = self.canvas.get_pixel(x, y)
             self.canvas_as_image.setPixelColor(x, y, QColor(pixel.r, pixel.g, pixel.b))
 
     def mousePressEvent(self, event):
@@ -473,6 +500,7 @@ class VanillaWindow(QMainWindow):
 
     def highlight_current_button(self, painter):
         painter.setBrush(QColor(255, 255, 255))
+        painter.setPen(Qt.transparent)
         button = self.buttons[self.canvas.current_tool]
         painter.drawRect(button.x(), button.y(), self.BUTTON_SIZE, self.BUTTON_SIZE)
 
@@ -528,8 +556,9 @@ class VanillaWindow(QMainWindow):
                                  self.canvas_left_side + self.canvas_width, y)
 
     def draw_buttons(self, painter):
+        painter.setPen(Qt.transparent)
+        painter.setBrush(QColor(self.canvas.current_color.r, self.canvas.current_color.g,
+                                self.canvas.current_color.b))
         for button, image in self.button_images.items():
-            painter.setBrush(QColor(self.canvas.current_color.r, self.canvas.current_color.g,
-                                    self.canvas.current_color.b))
-            painter.drawRect(button.x() + 2, button.y() + 2, self.BUTTON_SIZE - 4, self.BUTTON_SIZE - 4)
+            painter.drawRect(button.x() + 3, button.y() + 3, self.BUTTON_SIZE - 6, self.BUTTON_SIZE - 6)
             painter.drawImage(button.x(), button.y(), image.scaled(self.BUTTON_SIZE, self.BUTTON_SIZE))

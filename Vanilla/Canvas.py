@@ -15,24 +15,36 @@ class Canvas:
         self.height = height
         self.pixels = [[Color() for y in range(height)] for x in range(width)]
         self.changed_pixels = [(x, y) for x in range(width) for y in range(height)]
-        self.current_color = self.STANDARD_COLOR
+        self.current_color_rgb = self.STANDARD_COLOR
         self.brush_size = self.STANDARD_BRUSH_SIZE
         self.current_tool = Tools.BRUSH
+        self.is_in_greyscale = False
+
+    @property
+    def current_color(self):
+        return self.to_grayscale(self.current_color_rgb) if self.is_in_greyscale else self.current_color_rgb
 
     @staticmethod
     def get_distance(x1, y1, x2, y2):
         return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
+
+    def get_pixel(self, x, y):
+        return self.to_grayscale(self.pixels[x][y]) if self.is_in_greyscale else self.pixels[x][y]
+
+    def to_grayscale(self, color):
+        value = 0.299 * color.r + 0.587 * color.g + 0.114 * color.b
+        return Color(value, value, value)
 
     def paint(self, x, y):
         for dx in range(1 - self.brush_size, self.brush_size):
             for dy in range(1 - self.brush_size, self.brush_size):
                 if 0 <= x + dx < len(self.pixels) and 0 <= y + dy < len(self.pixels[0]) and \
                         self.get_distance(x, y, x + dx, y + dy) <= self.brush_size:
-                    self.paint_pixel(x + dx, y + dy, Color() if self.current_tool == Tools.ERASER else self.current_color)
+                    self.paint_pixel(x + dx, y + dy, Color() if self.current_tool == Tools.ERASER else self.current_color_rgb)
 
     def paint_pixel(self, x, y, color=None):
         if color is None:
-            color = self.current_color
+            color = self.current_color_rgb
         self.pixels[x][y] = color
         self.changed_pixels.append((x, y))
 
@@ -147,7 +159,7 @@ class Canvas:
                 queue.append(near_pos)
 
     def change_color(self, red, green, blue):
-        self.current_color = Color(red, green, blue)
+        self.current_color_rgb = Color(red, green, blue)
 
     def choose_eraser(self):
         self.current_tool = Tools.ERASER
@@ -169,3 +181,15 @@ class Canvas:
 
     def choose_fill(self):
         self.current_tool = Tools.FILL
+
+    def turn_grey_scale_on(self):
+        if self.is_in_greyscale:
+            return
+        self.is_in_greyscale = True
+        self.changed_pixels = [(x, y) for x in range(self.width) for y in range(self.height)]
+
+    def turn_grey_scale_off(self):
+        if not self.is_in_greyscale:
+            return
+        self.is_in_greyscale = False
+        self.changed_pixels = [(x, y) for x in range(self.width) for y in range(self.height)]
