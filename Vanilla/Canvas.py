@@ -19,6 +19,8 @@ class Canvas:
         self.brush_size = self.STANDARD_BRUSH_SIZE
         self.current_tool = Tools.BRUSH
         self.is_in_greyscale = False
+        self.selection_is_on = False
+        self.selection_edges = (0, 0, 0, 0)
 
     @property
     def current_color(self):
@@ -43,6 +45,8 @@ class Canvas:
                     self.paint_pixel(x + dx, y + dy, Color() if self.current_tool == Tools.ERASER else self.current_color_rgb)
 
     def paint_pixel(self, x, y, color=None):
+        if self.selection_is_on and not self.is_in_selection(x, y):
+            return
         if color is None:
             color = self.current_color_rgb
         self.pixels[x][y] = color
@@ -152,11 +156,31 @@ class Canvas:
         queue = [(x, y)]
         while len(queue) > 0:
             cur_x, cur_y = queue.pop()
-            if not (0 <= cur_x < self.width and 0 <= cur_y < self.height) or self.pixels[cur_x][cur_y] != color:
+            if (self.selection_is_on and not self.is_in_selection(cur_x, cur_y)) or \
+                    not (0 <= cur_x < self.width and 0 <= cur_y < self.height) or self.pixels[cur_x][cur_y] != color:
                 continue
             self.paint_pixel(cur_x, cur_y)
             for near_pos in [(cur_x, cur_y - 1), (cur_x + 1, cur_y), (cur_x, cur_y + 1), (cur_x - 1, cur_y)]:
+                if (self.selection_is_on and not self.is_in_selection(*near_pos)) or \
+                        not (0 <= near_pos[0] < self.width and 0 <= near_pos[1] < self.height) or \
+                        self.pixels[near_pos[0]][near_pos[1]] != color:
+                    continue
                 queue.append(near_pos)
+
+    def select(self, start_x, start_y, end_x, end_y):
+        self.selection_is_on = True
+        left = min(start_x, end_x)
+        right = max(start_x, end_x)
+        down = max(start_y, end_y) + 1
+        up = min(start_y, end_y)
+        self.selection_edges = (left, up, right, down)
+
+    def deselect(self):
+        self.selection_is_on = False
+
+    def is_in_selection(self, x, y):
+        return self.selection_edges[0] <= x <= self.selection_edges[2] \
+               and self.selection_edges[1] <= y < self.selection_edges[3]
 
     def change_color(self, red, green, blue):
         self.current_color_rgb = Color(red, green, blue)
@@ -196,3 +220,6 @@ class Canvas:
             return
         self.is_in_greyscale = False
         self.changed_pixels = [(x, y) for x in range(self.width) for y in range(self.height)]
+
+    def choose_all(self):
+        self.select(0, 0, self.width, self.height)

@@ -28,6 +28,12 @@ class VanillaWindow(QMainWindow):
         self.to_draw_selection = False
         self.cursor_on_canvas = False
         self.shape_start = None
+        self.selection_left = 0
+        self.selection_right = 0
+        self.selection_up = 0
+        self.selection_down = 0
+        self.selection_width = 0
+        self.selection_height = 0
         self.mouse_pressed = False
         self.picture_name = None
         self.canvas = Canvas()
@@ -167,6 +173,19 @@ class VanillaWindow(QMainWindow):
         self.greyscale_action.setDisabled(True)
         image_menu.addAction(self.greyscale_action)
 
+        selection_menu = self.menu_bar.addMenu('&Selection')
+
+        self.deselect_action = QAction('Deselect', self)
+        self.deselect_action.setShortcut('Ctrl+D')
+        self.deselect_action.triggered.connect(self.deselect)
+        self.deselect_action.setDisabled(True)
+        selection_menu.addAction(self.deselect_action)
+
+        self.select_all_action = QAction('Select All', self)
+        self.select_all_action.setShortcut('Ctrl+A')
+        self.select_all_action.triggered.connect(self.select_all)
+        selection_menu.addAction(self.select_all_action)
+
 
 
     def create_button(self, x, y, image, shortcut='', action=lambda: None):
@@ -225,6 +244,22 @@ class VanillaWindow(QMainWindow):
             self.canvas.turn_greyscale_off()
         self.update_canvas()
         self.update_color_button()
+        self.update()
+
+    def deselect(self):
+        self.canvas.deselect()
+        self.deselect_action.setDisabled(True)
+        self.to_draw_selection = False
+        self.update()
+
+    def select_all(self):
+        self.canvas.deselect()
+        self.shape_start = 0, 0
+        self.cursor_position = self.canvas.width - 1, self.canvas.height - 1
+        self.get_selection_position()
+        self.canvas.select(*self.shape_start, *self.cursor_position)
+        self.to_draw_selection = True
+        self.deselect_action.setDisabled(False)
         self.update()
 
     @property
@@ -403,6 +438,8 @@ class VanillaWindow(QMainWindow):
     def move_tools(self):
         if self.canvas.current_tool in [Tools.BRUSH, Tools.ERASER]:
             self.canvas.paint(*self.cursor_position)
+        if self.cursor_on_canvas and self.canvas.current_tool == Tools.SELECTION:
+            self.get_selection_position()
 
     def update_canvas(self):
         if not self.to_draw_canvas:
@@ -433,6 +470,8 @@ class VanillaWindow(QMainWindow):
         elif self.canvas.current_tool == Tools.FILL:
             self.canvas.fill(*self.cursor_position)
         elif self.canvas.current_tool == Tools.SELECTION:
+            self.deselect()
+            self.deselect_action.setDisabled(False)
             self.to_draw_selection = True
 
     def mouseReleaseEvent(self, event):
@@ -445,6 +484,8 @@ class VanillaWindow(QMainWindow):
     def release_tools(self):
         if self.shape_start is None:
             return
+        if self.canvas.current_tool == Tools.SELECTION:
+            self.canvas.select(*self.shape_start, *self.cursor_position)
         if self.canvas.current_tool == Tools.LINE:
             self.to_draw_line = False
             self.canvas.draw_line(*self.shape_start, *self.cursor_position)
@@ -457,8 +498,6 @@ class VanillaWindow(QMainWindow):
         elif self.canvas.current_tool == Tools.CIRCLE:
             self.to_draw_ellipse = False
             self.canvas.draw_ellipse(*self.shape_start, *self.cursor_position)
-        elif self.canvas.current_tool == Tools.SELECTION:
-            self.to_draw_selection = False
 
     def wheelEvent(self, event):
         if not self.to_draw_canvas:
@@ -554,39 +593,59 @@ class VanillaWindow(QMainWindow):
         up = min(start_y, end_y)
         painter.drawEllipse(left, up, abs(end_x - start_x), abs(end_y - start_y))
 
-    def draw_selection(self, painter):
+    def get_selection_position(self):
         start_x = self.shape_start[0] * self.pixel_size + self.canvas_left_side
         start_y = self.shape_start[1] * self.pixel_size + self.canvas_upper_side
         end_x = self.cursor_position[0] * self.pixel_size + self.canvas_left_side
         end_y = self.cursor_position[1] * self.pixel_size + self.canvas_upper_side
-        left = min(start_x, end_x)
-        right = max(start_x, end_x) + self.pixel_size
-        up = min(start_y, end_y)
-        down = max(start_y, end_y) +  self.pixel_size
+        self.selection_left = min(start_x, end_x)
+        self.selection_right = max(start_x, end_x) + self.pixel_size
+        self.selection_up = min(start_y, end_y)
+        self.selection_down = max(start_y, end_y) + self.pixel_size
+        self.selection_width = abs(self.cursor_position[0] - self.shape_start[0]) + 1
+        self.selection_height = abs(self.cursor_position[1] - self.shape_start[1]) + 1
+
+    def draw_selection(self, painter):
+        # for pos in [self.selection_left, self.selection_right, self.selection_down, self.selection_up]:
+        #     if pos is None:
+        #         self.get_selection_position()
+        #         break
         width = self.pixel_size / 4
         black_pen = QPen(QColor(0, 0, 0))
         black_pen.setWidth(3)
         white_pen = QPen(QColor(255, 255, 255))
         white_pen.setWidth(3)
         painter.setPen(black_pen)
-        for x in range(abs(self.cursor_position[0] - self.shape_start[0]) + 1):
-            painter.drawLine(left + x * self.pixel_size, up, left + x * self.pixel_size + width, up)
-            painter.drawLine(left + x * self.pixel_size, down, left + x * self.pixel_size + width, down)
+        for x in range(self.selection_width):
+            painter.drawLine(self.selection_left + x * self.pixel_size,
+                             self.selection_up, self.selection_left + x * self.pixel_size + width, self.selection_up)
+            painter.drawLine(self.selection_left + x * self.pixel_size,
+                             self.selection_down, self.selection_left + x * self.pixel_size + width, self.selection_down)
             painter.setPen(white_pen)
-            painter.drawLine(left + x * self.pixel_size + width, up, left + x * self.pixel_size + width * 3, up)
-            painter.drawLine(left + x * self.pixel_size + width, down, left + x * self.pixel_size + width * 3, down)
+            painter.drawLine(self.selection_left + x * self.pixel_size + width,
+                             self.selection_up, self.selection_left + x * self.pixel_size + width * 3, self.selection_up)
+            painter.drawLine(self.selection_left + x * self.pixel_size + width,
+                             self.selection_down, self.selection_left + x * self.pixel_size + width * 3, self.selection_down)
             painter.setPen(black_pen)
-            painter.drawLine(left + x * self.pixel_size + width * 3, up, left + x * self.pixel_size + width * 4, up)
-            painter.drawLine(left + x * self.pixel_size + width * 3, down, left + x * self.pixel_size + width * 4, down)
-        for y in range(abs(self.cursor_position[1] - self.shape_start[1]) + 1):
-            painter.drawLine(left, up + y * self.pixel_size, left, up + y * self.pixel_size + width)
-            painter.drawLine(right, up + y * self.pixel_size, right, up + y * self.pixel_size + width)
+            painter.drawLine(self.selection_left + x * self.pixel_size + width * 3,
+                             self.selection_up, self.selection_left + x * self.pixel_size + width * 4, self.selection_up)
+            painter.drawLine(self.selection_left + x * self.pixel_size + width * 3,
+                             self.selection_down, self.selection_left + x * self.pixel_size + width * 4, self.selection_down)
+        for y in range(self.selection_height):
+            painter.drawLine(self.selection_left, self.selection_up + y * self.pixel_size,
+                             self.selection_left, self.selection_up + y * self.pixel_size + width)
+            painter.drawLine(self.selection_right, self.selection_up + y * self.pixel_size,
+                             self.selection_right, self.selection_up + y * self.pixel_size + width)
             painter.setPen(white_pen)
-            painter.drawLine(left, up + y * self.pixel_size + width, left, up + y * self.pixel_size + width * 3)
-            painter.drawLine(right, up + y * self.pixel_size + width, right, up + y * self.pixel_size + width * 3)
+            painter.drawLine(self.selection_left, self.selection_up + y * self.pixel_size + width,
+                             self.selection_left, self.selection_up + y * self.pixel_size + width * 3)
+            painter.drawLine(self.selection_right, self.selection_up + y * self.pixel_size + width,
+                             self.selection_right, self.selection_up + y * self.pixel_size + width * 3)
             painter.setPen(black_pen)
-            painter.drawLine(left, up + y * self.pixel_size + width * 3, left, up + y * self.pixel_size + width * 4)
-            painter.drawLine(right, up + y * self.pixel_size + width * 3, right, up + y * self.pixel_size + width * 4)
+            painter.drawLine(self.selection_left, self.selection_up + y * self.pixel_size + width * 3,
+                             self.selection_left, self.selection_up + y * self.pixel_size + width * 4)
+            painter.drawLine(self.selection_right, self.selection_up + y * self.pixel_size + width * 3,
+                             self.selection_right, self.selection_up + y * self.pixel_size + width * 4)
 
     def draw_pixels(self, painter):
         painter.drawImage(self.canvas_left_side, self.canvas_upper_side,
