@@ -182,13 +182,16 @@ class Canvas:
     def choose_fill(self):
         self.current_tool = Tools.FILL
 
-    def turn_grey_scale_on(self):
+    def choose_selection(self):
+        self.current_tool = Tools.SELECTION
+
+    def turn_greyscale_on(self):
         if self.is_in_greyscale:
             return
         self.is_in_greyscale = True
         self.changed_pixels = [(x, y) for x in range(self.width) for y in range(self.height)]
 
-    def turn_grey_scale_off(self):
+    def turn_greyscale_off(self):
         if not self.is_in_greyscale:
             return
         self.is_in_greyscale = False
