@@ -7,6 +7,7 @@ from Canvas import Canvas
 from Color import Color
 from Tools import Tools
 import math
+from BrightnessDialog import BrightnessDialog
 
 
 class VanillaWindow(QMainWindow):
@@ -119,6 +120,8 @@ class VanillaWindow(QMainWindow):
         triangle_button = self.create_button(rectangle_button.x(), ellipse_button.y(), 'Triangle', 'T',
                                              self.triangle_button_clicked)
         self.buttons[Tools.TRIANGLE] = triangle_button
+
+        self.create_button(100, 100, '', '', self.brightness)
 
         width = QDesktopWidget().width()
         height = QDesktopWidget().height() - 64
@@ -261,6 +264,15 @@ class VanillaWindow(QMainWindow):
         self.to_draw_selection = True
         self.deselect_action.setDisabled(False)
         self.update()
+
+    def change_brightness(self, brightness):
+        self.canvas.change_brightness(brightness)
+        self.update_canvas()
+        self.update()
+
+    def brightness(self):
+        brightness = BrightnessDialog.get_brightness(self)
+        self.change_brightness(brightness)
 
     @property
     def canvas_left_side(self):
