@@ -624,10 +624,6 @@ class VanillaWindow(QMainWindow):
         self.selection_height = abs(self.cursor_position[1] - self.shape_start[1]) + 1
 
     def draw_selection(self, painter):
-        # for pos in [self.selection_left, self.selection_right, self.selection_down, self.selection_up]:
-        #     if pos is None:
-        #         self.get_selection_position()
-        #         break
         width = self.pixel_size / 4
         black_pen = QPen(QColor(0, 0, 0))
         black_pen.setWidth(3)
