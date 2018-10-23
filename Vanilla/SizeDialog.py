@@ -33,6 +33,7 @@ class SizeDialog(QDialog):
         self.setWindowIcon(self.root.windowIcon())
         self.setWindowFlags(Qt.MSWindowsFixedSizeDialogHint | Qt.WindowCloseButtonHint)
         self.resize(self.WIDTH, self.HEIGHT)
+        self.setModal(True)
 
         self.ok_button = QPushButton('Ok', self)
         self.ok_button.setGeometry(self.WIDTH / 2 - self.BUTTON_WIDTH - self.MIDDLE_BUTTON_SHIFT,

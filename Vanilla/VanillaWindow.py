@@ -121,8 +121,6 @@ class VanillaWindow(QMainWindow):
                                              self.triangle_button_clicked)
         self.buttons[Tools.TRIANGLE] = triangle_button
 
-        self.create_button(100, 100, '', '', self.brightness)
-
         width = QDesktopWidget().width()
         height = QDesktopWidget().height() - 64
         size = 20
@@ -169,12 +167,18 @@ class VanillaWindow(QMainWindow):
 
         image_menu = self.menu_bar.addMenu('&Image')
 
-        self.greyscale_action = QAction('Grayscale', self)
+        self.greyscale_action = QAction('Greyscale', self)
         self.greyscale_action.setShortcut('Ctrl+G')
         self.greyscale_action.setCheckable(True)
         self.greyscale_action.triggered.connect(self.change_greyscale)
         self.greyscale_action.setDisabled(True)
         image_menu.addAction(self.greyscale_action)
+
+        self.brightness_action = QAction('Brightness', self)
+        self.brightness_action.setShortcut('Ctrl+B')
+        self.brightness_action.triggered.connect(self.brightness)
+        self.brightness_action.setDisabled(True)
+        image_menu.addAction(self.brightness_action)
 
         selection_menu = self.menu_bar.addMenu('&Selection')
 
@@ -271,8 +275,9 @@ class VanillaWindow(QMainWindow):
         self.update()
 
     def brightness(self):
-        brightness = BrightnessDialog.get_brightness(self)
-        self.change_brightness(brightness)
+        success, brightness = BrightnessDialog.get_brightness(self, self.canvas.brightness)
+        if success:
+            self.change_brightness(brightness)
 
     @property
     def canvas_left_side(self):
@@ -339,6 +344,7 @@ class VanillaWindow(QMainWindow):
         self.save_as_action.setDisabled(False)
         self.greyscale_action.setChecked(False)
         self.greyscale_action.setDisabled(False)
+        self.brightness_action.setDisabled(False)
 
     def convert_to_image(self):
         image = QImage(self.canvas.width, self.canvas.height, QImage.Format_RGB888)
