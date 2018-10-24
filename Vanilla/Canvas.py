@@ -42,7 +42,10 @@ class Canvas:
 
     def use_brightness(self, color):
         multiplier = self.brightness / 100
-        return Color(color.r * multiplier, color.g * multiplier, color.b * multiplier)
+        red = min(color.r * multiplier, 255)
+        green = min(color.g * multiplier, 255)
+        blue = min(color.b * multiplier, 255)
+        return Color(red, green, blue)
 
     def paint(self, x, y):
         for dx in range(1 - self.brush_size, self.brush_size):
@@ -234,3 +237,8 @@ class Canvas:
     def change_brightness(self, brightness):
         self.brightness = brightness
         self.changed_pixels = [(x, y) for x in range(self.width) for y in range(self.height)]
+
+    def delete_selection(self):
+        for x in range(self.selection_edges[0], self.selection_edges[2] + 1):
+            for y in range(self.selection_edges[1], self.selection_edges[3]):
+                self.paint_pixel(x, y, Color())

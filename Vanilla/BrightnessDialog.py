@@ -12,6 +12,7 @@ class BrightnessDialog(QDialog):
     BUTTON_HEIGHT = 35
     BOTTOM_BUTTON_SHIFT = 10 + BUTTON_HEIGHT
     MIDDLE_BUTTON_SHIFT = 10
+    MAXIMUM = 200
 
     def __init__(self, root, current):
         super().__init__()
@@ -30,7 +31,7 @@ class BrightnessDialog(QDialog):
 
         self.slider = QSlider(Qt.Horizontal, self)
         self.slider.setGeometry(10, label.height() + self.HEIGHT // 24, self.WIDTH // 3 * 2 - 20, self.HEIGHT // 6)
-        self.slider.setMaximum(100)
+        self.slider.setMaximum(self.MAXIMUM)
         self.slider.setMinimum(0)
         self.slider.setValue(current)
         self.slider.show()
@@ -40,7 +41,7 @@ class BrightnessDialog(QDialog):
         self.edit.setFont(self.FONT)
         self.edit.setGeometry(self.slider.width() + 20, label.height(), self.WIDTH // 3 - 30, self.HEIGHT // 12 * 3)
         self.edit.textChanged[str].connect(self.text_changed)
-        self.edit.setValidator(QIntValidator(0, 100))
+        self.edit.setValidator(QIntValidator(0, self.MAXIMUM))
         self.slider_changed(current)
 
         percent = QLabel('%', self)

@@ -191,7 +191,16 @@ class VanillaWindow(QMainWindow):
         self.select_all_action = QAction('Select All', self)
         self.select_all_action.setShortcut('Ctrl+A')
         self.select_all_action.triggered.connect(self.select_all)
+        self.select_all_action.setDisabled(True)
         selection_menu.addAction(self.select_all_action)
+
+        selection_menu.addSeparator()
+
+        self.delete_selection_action = QAction('Delete', self)
+        self.delete_selection_action.setShortcut('Delete')
+        self.delete_selection_action.triggered.connect(self.delete_in_selection)
+        self.delete_selection_action.setDisabled(True)
+        selection_menu.addAction(self.delete_selection_action)
 
 
 
@@ -256,6 +265,7 @@ class VanillaWindow(QMainWindow):
     def deselect(self):
         self.canvas.deselect()
         self.deselect_action.setDisabled(True)
+        self.delete_selection_action.setDisabled(True)
         self.to_draw_selection = False
         self.update()
 
@@ -267,6 +277,7 @@ class VanillaWindow(QMainWindow):
         self.canvas.select(*self.shape_start, *self.cursor_position)
         self.to_draw_selection = True
         self.deselect_action.setDisabled(False)
+        self.delete_selection_action.setDisabled(False)
         self.update()
 
     def change_brightness(self, brightness):
@@ -278,6 +289,13 @@ class VanillaWindow(QMainWindow):
         success, brightness = BrightnessDialog.get_brightness(self, self.canvas.brightness)
         if success:
             self.change_brightness(brightness)
+
+    def delete_in_selection(self):
+        if not self.canvas.selection_is_on:
+            return
+        self.canvas.delete_selection()
+        self.update_canvas()
+        self.update()
 
     @property
     def canvas_left_side(self):
@@ -340,11 +358,15 @@ class VanillaWindow(QMainWindow):
         self.canvas_upper_edge = (self.height() - self.canvas_height) / 2
         self.canvas_as_image = self.convert_to_image()
         self.to_draw_canvas = True
+        self.enable_actions()
+
+    def enable_actions(self):
         self.save_action.setDisabled(False)
         self.save_as_action.setDisabled(False)
         self.greyscale_action.setChecked(False)
         self.greyscale_action.setDisabled(False)
         self.brightness_action.setDisabled(False)
+        self.select_all_action.setDisabled(False)
 
     def convert_to_image(self):
         image = QImage(self.canvas.width, self.canvas.height, QImage.Format_RGB888)
@@ -490,6 +512,7 @@ class VanillaWindow(QMainWindow):
         elif self.canvas.current_tool == Tools.SELECTION:
             self.deselect()
             self.deselect_action.setDisabled(False)
+            self.delete_selection_action.setDisabled(False)
             self.to_draw_selection = True
 
     def mouseReleaseEvent(self, event):
