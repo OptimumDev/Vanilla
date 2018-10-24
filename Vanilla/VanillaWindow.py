@@ -202,8 +202,6 @@ class VanillaWindow(QMainWindow):
         self.delete_selection_action.setDisabled(True)
         selection_menu.addAction(self.delete_selection_action)
 
-
-
     def create_button(self, x, y, image, shortcut='', action=lambda: None):
         button = QPushButton('', self)
         button.setGeometry(x, y, self.BUTTON_SIZE, self.BUTTON_SIZE)
