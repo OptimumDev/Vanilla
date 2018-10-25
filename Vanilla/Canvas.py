@@ -7,7 +7,7 @@ class Canvas:
 
     STANDARD_WIDTH = 32
     STANDARD_HEIGHT = 32
-    STANDARD_COLOR = Color(0, 0, 0)
+    STANDARD_COLOR = Color(0, 0, 0, 255)
     STANDARD_BRUSH_SIZE = 1
 
     def __init__(self, width=STANDARD_WIDTH, height=STANDARD_HEIGHT):
@@ -38,21 +38,22 @@ class Canvas:
     @staticmethod
     def to_greyscale(color):
         value = 0.299 * color.r + 0.587 * color.g + 0.114 * color.b
-        return Color(value, value, value)
+        return Color(value, value, value, color.a)
 
     def use_brightness(self, color):
         multiplier = self.brightness / 100
         red = min(color.r * multiplier, 255)
         green = min(color.g * multiplier, 255)
         blue = min(color.b * multiplier, 255)
-        return Color(red, green, blue)
+        return Color(red, green, blue, color.a)
 
     def paint(self, x, y):
         for dx in range(1 - self.brush_size, self.brush_size):
             for dy in range(1 - self.brush_size, self.brush_size):
                 if 0 <= x + dx < len(self.pixels) and 0 <= y + dy < len(self.pixels[0]) and \
                         self.get_distance(x, y, x + dx, y + dy) <= self.brush_size:
-                    self.paint_pixel(x + dx, y + dy, Color() if self.current_tool == Tools.ERASER else self.current_color_rgb)
+                    self.paint_pixel(x + dx, y + dy,
+                                     Color() if self.current_tool == Tools.ERASER else self.current_color_rgb)
 
     def paint_pixel(self, x, y, color=None):
         if self.selection_is_on and not self.is_in_selection(x, y):
@@ -192,8 +193,8 @@ class Canvas:
         return self.selection_edges[0] <= x <= self.selection_edges[2] \
                and self.selection_edges[1] <= y < self.selection_edges[3]
 
-    def change_color(self, red, green, blue):
-        self.current_color_rgb = Color(red, green, blue)
+    def change_color(self, red, green, blue, alpha):
+        self.current_color_rgb = Color(red, green, blue, alpha)
 
     def choose_eraser(self):
         self.current_tool = Tools.ERASER

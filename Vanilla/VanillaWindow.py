@@ -325,7 +325,7 @@ class VanillaWindow(QMainWindow):
     def pick_color(self):
         color = QColorDialog.getColor()
         if color.isValid():
-            self.canvas.change_color(color.red(), color.green(), color.blue())
+            self.canvas.change_color(color.red(), color.green(), color.blue(), color.alpha())
             self.update_color_button()
 
     def update_color_button(self):
@@ -343,6 +343,7 @@ class VanillaWindow(QMainWindow):
         self.canvas = Canvas(width, height)
         self.canvas.current_color_rgb = old_canvas.current_color_rgb
         self.canvas.brush_size = old_canvas.brush_size
+        self.canvas.current_tool = old_canvas.current_tool
         max_size = self.height() - self.SHIFT * 2
         proportion = width / height
         if proportion > 1:
@@ -367,12 +368,12 @@ class VanillaWindow(QMainWindow):
         self.select_all_action.setDisabled(False)
 
     def convert_to_image(self):
-        image = QImage(self.canvas.width, self.canvas.height, QImage.Format_RGB888)
+        image = QImage(self.canvas.width, self.canvas.height, QImage.Format_ARGB32)
         x = 0
         y = 0
         for column in self.canvas.pixels:
             for pixel in column:
-                image.setPixelColor(x, y, QColor(pixel.r, pixel.g, pixel.b))
+                image.setPixelColor(x, y, QColor(pixel.r, pixel.g, pixel.b, pixel.a))
                 y += 1
             x += 1
             y = 0
@@ -389,9 +390,7 @@ class VanillaWindow(QMainWindow):
         for x in range(self.canvas.width):
             for y in range(self.canvas.height):
                 color = image.pixelColor(x, y)
-                if color.alpha() == 0:
-                    color = QColor(255, 255, 255)
-                self.canvas.pixels[x][y] = Color(color.red(), color.green(), color.blue())
+                self.canvas.pixels[x][y] = Color(color.red(), color.green(), color.blue(), color.alpha())
         self.update_canvas()
         self.to_draw_canvas = True
         self.update()
@@ -485,7 +484,7 @@ class VanillaWindow(QMainWindow):
         while len(self.canvas.changed_pixels) > 0:
             x, y = self.canvas.changed_pixels.pop()
             pixel = self.canvas.get_pixel(x, y)
-            self.canvas_as_image.setPixelColor(x, y, QColor(pixel.r, pixel.g, pixel.b))
+            self.canvas_as_image.setPixelColor(x, y, QColor(pixel.r, pixel.g, pixel.b, pixel.a))
 
     def mousePressEvent(self, event):
         if self.cursor_on_canvas and event.button() == Qt.LeftButton:
