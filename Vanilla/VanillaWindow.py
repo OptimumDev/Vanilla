@@ -15,6 +15,7 @@ class VanillaWindow(QMainWindow):
     SHIFT = 100
     MAX_BRUSH_SIZE = 500
     TOOLBAR_HEIGHT = 791
+    TOOLBAR_WIDTH = 389
     BUTTON_SIZE = 64
     MENU_BAR_HEIGHT = 30
     MINIMUM_CANVAS_LEFT_SHIFT = 250
@@ -612,7 +613,7 @@ class VanillaWindow(QMainWindow):
         painter.end()
 
     def draw_layers(self, painter):
-        painter.drawImage(self.width() - 389, self.menu_bar.height(), QImage('images/LayersBar.png'))
+        painter.drawImage(self.width() - self.TOOLBAR_WIDTH, self.menu_bar.height(), QImage('images/LayersBar.png'))
 
     def highlight_current_button(self, painter):
         painter.setBrush(QColor(255, 255, 255))
