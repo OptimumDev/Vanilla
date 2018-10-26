@@ -48,7 +48,7 @@ class Canvas:
 
     def get_pixel(self, x, y, layer):
         pixel = self.layers[layer].pixels[x][y]
-        color = self.to_greyscale(pixel) if self.active_layer.greyscale else pixel
+        color = self.to_greyscale(pixel) if self.layers[layer].greyscale else pixel
         return self.use_brightness(color, layer)
 
     @staticmethod

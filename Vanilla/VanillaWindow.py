@@ -8,6 +8,7 @@ from Color import Color
 from Tools import Tools
 import math
 from BrightnessDialog import BrightnessDialog
+from LayerTable import LayerTable
 
 
 class VanillaWindow(QMainWindow):
@@ -41,6 +42,7 @@ class VanillaWindow(QMainWindow):
         self.canvas = Canvas()
         self.button_images = {}
         self.buttons = {}
+        self.layer_tables = []
         self.init_ui()
 
     def init_ui(self):
@@ -229,17 +231,25 @@ class VanillaWindow(QMainWindow):
         button.show()
         return button
 
-    def create_layer_button(self, x, y, name, layer_number):
-        button = QPushButton(name, self)
+    def create_layer_button(self, x, y, layer_number):
+        button = QPushButton('', self)
         button.setGeometry(x, y, 187, 100)
-        button.clicked.connect(lambda: self.canvas.change_layer(layer_number))
+        button.setStyleSheet('background: transparent;')
+        button.clicked.connect(lambda: self.change_layer(layer_number))
         button.show()
+        return button
+
+    def change_layer(self, number):
+        self.canvas.change_layer(number)
+        self.update_color_button()
+        self.update()
 
     def update_layers_buttons(self):
         x = self.layer_button_left + 5
         for i in range(len(self.canvas.layers)):
             layer = self.canvas.layers[i]
-            self.create_layer_button(x, 90 + i * 105, layer.name, i)
+            btn = self.create_layer_button(x, 90 + i * 105, i)
+            self.layer_tables.append(LayerTable(x, 90 + i * 105, layer, btn, self))
 
     def add_layer(self):
         if len(self.canvas.layers) == 6:
@@ -631,6 +641,8 @@ class VanillaWindow(QMainWindow):
 
     def draw_layers(self, painter):
         painter.drawImage(self.width() - self.TOOLBAR_WIDTH, self.menu_bar.height(), QImage('images/LayersBar.png'))
+        for table in self.layer_tables:
+            table.draw(painter)
 
     def highlight_current_button(self, painter):
         painter.setBrush(QColor(255, 255, 255))
