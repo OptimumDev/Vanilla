@@ -171,7 +171,6 @@ class VanillaWindow(QMainWindow):
 
         self.greyscale_action = QAction('Greyscale', self)
         self.greyscale_action.setShortcut('Ctrl+G')
-        self.greyscale_action.setCheckable(True)
         self.greyscale_action.triggered.connect(self.change_greyscale)
         self.greyscale_action.setDisabled(True)
         image_menu.addAction(self.greyscale_action)
@@ -270,10 +269,10 @@ class VanillaWindow(QMainWindow):
         self.update()
 
     def change_greyscale(self):
-        if self.greyscale_action.isChecked():
-            self.canvas.turn_greyscale_on()
-        else:
+        if self.canvas.active_layer.greyscale:
             self.canvas.turn_greyscale_off()
+        else:
+            self.canvas.turn_greyscale_on()
         self.update_canvas()
         self.update_color_button()
         self.update()
@@ -381,7 +380,6 @@ class VanillaWindow(QMainWindow):
     def enable_actions(self):
         self.save_action.setDisabled(False)
         self.save_as_action.setDisabled(False)
-        self.greyscale_action.setChecked(False)
         self.greyscale_action.setDisabled(False)
         self.brightness_action.setDisabled(False)
         self.select_all_action.setDisabled(False)
@@ -606,10 +604,15 @@ class VanillaWindow(QMainWindow):
             self.draw_ellipse(painter)
         if self.to_draw_selection:
             self.draw_selection(painter)
+        self.draw_edges(painter)
+        self.draw_layers(painter)
         painter.drawImage(0, self.menu_bar.height(), QImage('images/ToolBar.png'))
         self.highlight_current_button(painter)
         self.draw_buttons(painter)
         painter.end()
+
+    def draw_layers(self, painter):
+        painter.drawImage(self.width() - 389, self.menu_bar.height(), QImage('images/LayersBar.png'))
 
     def highlight_current_button(self, painter):
         painter.setBrush(QColor(255, 255, 255))
@@ -717,6 +720,15 @@ class VanillaWindow(QMainWindow):
                 y = self.canvas_upper_side + i * self.pixel_size
                 painter.drawLine(self.canvas_left_side, y,
                                  self.canvas_left_side + self.canvas_width, y)
+
+    def draw_edges(self, painter):
+        painter.setPen(Qt.transparent)
+        painter.setBrush(QColor('#393939'))
+        painter.drawRect(self.vertical_scrollbar.x(), self.vertical_scrollbar.y(),
+                         self.vertical_scrollbar.width(),
+                         self.vertical_scrollbar.height() + self.horizontal_scrollbar.height() + 1)
+        painter.drawRect(self.horizontal_scrollbar.x(), self.horizontal_scrollbar.y(),
+                         self.horizontal_scrollbar.width(), self.horizontal_scrollbar.height() + 1)
 
     def draw_buttons(self, painter):
         painter.setPen(Qt.transparent)
