@@ -266,11 +266,17 @@ class Canvas:
                 self.LAYER_NAME : self.LAYER_STANDARD_NAME + str(number)}
 
     def add_layer(self):
+        self.current_layer = len(self.layers)
         self.layers.append(self.new_layer(self.LAYER_STANDARD_NAME + str(len(self.layers))))
 
     def change_layer(self, layer):
         self.current_layer = layer
         print('current layer:', layer)
+
+    def delete_layer(self, layer):
+        self.current_layer = 0
+        self.layers.remove(layer)
+        self.update_changed_pixels()
 
     def change_layer_name(self, layer, name):
         self.layers[layer].name = name

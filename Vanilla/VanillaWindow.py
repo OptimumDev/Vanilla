@@ -244,7 +244,17 @@ class VanillaWindow(QMainWindow):
         self.update_color_button()
         self.update()
 
+    def delete_layer(self, layer_table):
+        self.canvas.delete_layer(layer_table.layer)
+        self.layer_tables.remove(layer_table)
+        self.update_canvas()
+        self.update_layers_buttons()
+        self.update()
+
     def update_layers_buttons(self):
+        for table in self.layer_tables:
+            table.close()
+        self.layer_tables = []
         x = self.layer_button_left + 5
         for i in range(len(self.canvas.layers)):
             layer = self.canvas.layers[i]
