@@ -121,6 +121,8 @@ class VanillaWindow(QMainWindow):
                                              self.triangle_button_clicked)
         self.buttons[Tools.TRIANGLE] = triangle_button
 
+        test = self.create_button(100, 100, '', '', self.add_layer)
+
         width = QDesktopWidget().width()
         height = QDesktopWidget().height() - 64
         size = 20
@@ -213,6 +215,23 @@ class VanillaWindow(QMainWindow):
         button.show()
         return button
 
+    def create_layer_button(self, x, y, name, layer_number):
+        button = QPushButton(name, self)
+        button.setGeometry(x, y, 100, 30)
+        button.clicked.connect(lambda: self.canvas.change_layer(layer_number))
+        button.show()
+
+    def update_layers_buttons(self):
+        layer_number = 0
+        x = self.width() - 130
+        for layer in self.canvas.layers_info:
+            self.create_layer_button(x, 30 + layer_number * 40, layer[Canvas.LAYER_NAME], layer_number)
+            layer_number += 1
+
+    def add_layer(self):
+        self.canvas.add_layer()
+        self.update_layers_buttons()
+
     def eraser_button_clicked(self):
         self.canvas.choose_eraser()
         self.update()
@@ -284,7 +303,7 @@ class VanillaWindow(QMainWindow):
         self.update()
 
     def brightness(self):
-        success, brightness = BrightnessDialog.get_brightness(self, self.canvas.brightness)
+        success, brightness = BrightnessDialog.get_brightness(self, self.canvas.active_layer_info[Canvas.BRIGHTNESS])
         if success:
             self.change_brightness(brightness)
 
@@ -358,6 +377,7 @@ class VanillaWindow(QMainWindow):
         self.canvas_as_image = self.convert_to_image()
         self.to_draw_canvas = True
         self.enable_actions()
+        self.update_layers_buttons()
 
     def enable_actions(self):
         self.save_action.setDisabled(False)
@@ -371,12 +391,13 @@ class VanillaWindow(QMainWindow):
         image = QImage(self.canvas.width, self.canvas.height, QImage.Format_ARGB32)
         x = 0
         y = 0
-        for column in self.canvas.pixels:
-            for pixel in column:
-                image.setPixelColor(x, y, QColor(pixel.r, pixel.g, pixel.b, pixel.a))
-                y += 1
-            x += 1
-            y = 0
+        for layer in self.canvas.layers:
+            for column in layer:
+                for pixel in column:
+                    image.setPixelColor(x, y, QColor(pixel.r, pixel.g, pixel.b, pixel.a))
+                    y += 1
+                x += 1
+                y = 0
         return image
 
     def open(self):
@@ -482,8 +503,11 @@ class VanillaWindow(QMainWindow):
         if not self.to_draw_canvas:
             return
         while len(self.canvas.changed_pixels) > 0:
-            x, y = self.canvas.changed_pixels.pop()
-            pixel = self.canvas.get_pixel(x, y)
+            x, y, layer = self.canvas.changed_pixels.pop()
+            pixel = self.canvas.get_pixel(x, y, layer)
+            while layer > 0 and pixel.a == 0:
+                layer -= 1
+            pixel = self.canvas.get_pixel(x, y, layer)
             self.canvas_as_image.setPixelColor(x, y, QColor(pixel.r, pixel.g, pixel.b, pixel.a))
 
     def mousePressEvent(self, event):

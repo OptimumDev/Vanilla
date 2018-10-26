@@ -9,39 +9,57 @@ class Canvas:
     STANDARD_HEIGHT = 32
     STANDARD_COLOR = Color(0, 0, 0, 255)
     STANDARD_BRUSH_SIZE = 1
+    GREYSCALE = 1
+    BRIGHTNESS = 2
+    LAYER_NAME = 3
+    LAYER_STANDARD_NAME = 'Layer #'
 
     def __init__(self, width=STANDARD_WIDTH, height=STANDARD_HEIGHT):
         self.width = width
         self.height = height
-        self.pixels = [[Color() for y in range(height)] for x in range(width)]
-        self.changed_pixels = [(x, y) for x in range(width) for y in range(height)]
+        self.layers = [self.new_layer]
+        self.layers_info = [self.layer_info(str(i)) for i in range(len(self.layers))]
+        self.current_layer = 0
+        self.changed_pixels = [(x, y, self.current_layer) for x in range(width) for y in range(height)]
         self.current_color_rgb = self.STANDARD_COLOR
         self.brush_size = self.STANDARD_BRUSH_SIZE
         self.current_tool = Tools.BRUSH
-        self.is_in_greyscale = False
         self.selection_is_on = False
         self.selection_edges = (0, 0, 0, 0)
-        self.brightness = 100
+
+    @property
+    def active_layer_info(self):
+        return self.layers_info[self.current_layer]
+
+    @property
+    def pixels(self):
+        return self.layers[self.current_layer]
+
+    @property
+    def new_layer(self):
+        return [[Color() for y in range(self.height)] for x in range(self.width)]
 
     @property
     def current_color(self):
-        return self.to_greyscale(self.current_color_rgb) if self.is_in_greyscale else self.current_color_rgb
+        return self.to_greyscale(self.current_color_rgb) if self.active_layer_info[self.GREYSCALE] else self.current_color_rgb
 
     @staticmethod
     def get_distance(x1, y1, x2, y2):
         return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
 
-    def get_pixel(self, x, y):
-        color = self.to_greyscale(self.pixels[x][y]) if self.is_in_greyscale else self.pixels[x][y]
-        return self.use_brightness(color)
+    def get_pixel(self, x, y, layer):
+        pixel = self.layers[layer][x][y]
+        color = self.to_greyscale(pixel) if self.active_layer_info[self.GREYSCALE] else pixel
+        return self.use_brightness(color, layer)
 
     @staticmethod
     def to_greyscale(color):
         value = 0.299 * color.r + 0.587 * color.g + 0.114 * color.b
         return Color(value, value, value, color.a)
 
-    def use_brightness(self, color):
-        multiplier = self.brightness / 100
+    def use_brightness(self, color, layer):
+        brightness = self.layers_info[layer][self.BRIGHTNESS]
+        multiplier = brightness / 100
         red = min(color.r * multiplier, 255)
         green = min(color.g * multiplier, 255)
         blue = min(color.b * multiplier, 255)
@@ -61,7 +79,7 @@ class Canvas:
         if color is None:
             color = self.current_color_rgb
         self.pixels[x][y] = color
-        self.changed_pixels.append((x, y))
+        self.changed_pixels.append((x, y, self.current_layer))
 
     def draw_line(self, start_x, start_y, end_x, end_y):
         width = abs(end_x - start_x) + 1
@@ -220,26 +238,42 @@ class Canvas:
     def choose_selection(self):
         self.current_tool = Tools.SELECTION
 
+    def update_changed_pixels(self):
+        for layer in range(len(self.layers)):
+            self.changed_pixels = [(x, y, layer) for x in range(self.width) for y in range(self.height)]
+
     def turn_greyscale_on(self):
-        if self.is_in_greyscale:
-            return
-        self.is_in_greyscale = True
-        self.changed_pixels = [(x, y) for x in range(self.width) for y in range(self.height)]
+        self.active_layer_info[self.GREYSCALE] = True
+        self.update_changed_pixels()
 
     def turn_greyscale_off(self):
-        if not self.is_in_greyscale:
-            return
-        self.is_in_greyscale = False
-        self.changed_pixels = [(x, y) for x in range(self.width) for y in range(self.height)]
+        self.active_layer_info[self.GREYSCALE] = False
+        self.update_changed_pixels()
 
     def choose_all(self):
         self.select(0, 0, self.width, self.height)
 
     def change_brightness(self, brightness):
-        self.brightness = brightness
-        self.changed_pixels = [(x, y) for x in range(self.width) for y in range(self.height)]
+        self.active_layer_info[self.BRIGHTNESS] = brightness
+        self.update_changed_pixels()
 
     def delete_selection(self):
         for x in range(self.selection_edges[0], self.selection_edges[2] + 1):
             for y in range(self.selection_edges[1], self.selection_edges[3]):
                 self.paint_pixel(x, y, Color())
+
+    def layer_info(self, number, greyscale=False, brightness=100):
+        return {self.GREYSCALE : greyscale,
+                self.BRIGHTNESS : brightness,
+                self.LAYER_NAME : self.LAYER_STANDARD_NAME + str(number)}
+
+    def add_layer(self):
+        self.layers_info.append(self.layer_info(len(self.layers)))
+        self.layers.append(self.new_layer)
+
+    def change_layer(self, layer):
+        self.current_layer = layer
+        print('current layer:', layer)
+
+    def change_layer_name(self, layer, name):
+        self.layers_info[layer][self.LAYER_NAME] = name
