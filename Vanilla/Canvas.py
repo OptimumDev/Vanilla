@@ -271,7 +271,6 @@ class Canvas:
 
     def change_layer(self, layer):
         self.current_layer = layer
-        print('current layer:', layer)
 
     def delete_layer(self, layer):
         self.current_layer = 0

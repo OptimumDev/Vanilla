@@ -651,6 +651,7 @@ class VanillaWindow(QMainWindow):
 
     def draw_layers(self, painter):
         painter.drawImage(self.width() - self.TOOLBAR_WIDTH, self.menu_bar.height(), QImage('images/LayersBar.png'))
+        self.draw_current_layer(painter)
         for table in self.layer_tables:
             table.draw(painter)
 
@@ -769,6 +770,13 @@ class VanillaWindow(QMainWindow):
                          self.vertical_scrollbar.height() + self.horizontal_scrollbar.height() + 1)
         painter.drawRect(self.horizontal_scrollbar.x(), self.horizontal_scrollbar.y(),
                          self.horizontal_scrollbar.width(), self.horizontal_scrollbar.height() + 1)
+
+    def draw_current_layer(self, painter):
+        if not self.to_draw_canvas:
+            return
+        painter.setBrush(Qt.white)
+        table = self.layer_tables[self.canvas.current_layer]
+        painter.drawRect(table.x, table.y, LayerTable.WIDTH, LayerTable.HEIGHT)
 
     def draw_buttons(self, painter):
         painter.setPen(Qt.transparent)
