@@ -222,11 +222,10 @@ class VanillaWindow(QMainWindow):
         button.show()
 
     def update_layers_buttons(self):
-        layer_number = 0
         x = self.width() - 130
-        for layer in self.canvas.layers_info:
-            self.create_layer_button(x, 30 + layer_number * 40, layer[Canvas.LAYER_NAME], layer_number)
-            layer_number += 1
+        for i in range(len(self.canvas.layers)):
+            layer = self.canvas.layers[i]
+            self.create_layer_button(x, 30 + i * 40, layer.name, i)
 
     def add_layer(self):
         self.canvas.add_layer()
@@ -303,7 +302,7 @@ class VanillaWindow(QMainWindow):
         self.update()
 
     def brightness(self):
-        success, brightness = BrightnessDialog.get_brightness(self, self.canvas.active_layer_info[Canvas.BRIGHTNESS])
+        success, brightness = BrightnessDialog.get_brightness(self, self.canvas.active_layer.brightness)
         if success:
             self.change_brightness(brightness)
 
@@ -392,7 +391,7 @@ class VanillaWindow(QMainWindow):
         x = 0
         y = 0
         for layer in self.canvas.layers:
-            for column in layer:
+            for column in layer.pixels:
                 for pixel in column:
                     image.setPixelColor(x, y, QColor(pixel.r, pixel.g, pixel.b, pixel.a))
                     y += 1
@@ -503,11 +502,12 @@ class VanillaWindow(QMainWindow):
         if not self.to_draw_canvas:
             return
         while len(self.canvas.changed_pixels) > 0:
-            x, y, layer = self.canvas.changed_pixels.pop()
+            x, y = self.canvas.changed_pixels.pop()
+            layer = len(self.canvas.layers) - 1
             pixel = self.canvas.get_pixel(x, y, layer)
             while layer > 0 and pixel.a == 0:
                 layer -= 1
-            pixel = self.canvas.get_pixel(x, y, layer)
+                pixel = self.canvas.get_pixel(x, y, layer)
             self.canvas_as_image.setPixelColor(x, y, QColor(pixel.r, pixel.g, pixel.b, pixel.a))
 
     def mousePressEvent(self, event):
