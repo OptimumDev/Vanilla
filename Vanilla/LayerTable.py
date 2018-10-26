@@ -3,7 +3,6 @@ from PyQt5.QtGui import QImage, QFont
 from PyQt5.QtCore import Qt
 
 
-
 class LayerTable:
 
     WIDTH = 187
