@@ -90,6 +90,7 @@ class VanillaWindow(QMainWindow):
                                     self.size_slider.width() + self.size_edit.width() + 5, 30)
         self.size_label.show()
 
+
         brush_button = self.create_button(20, self.MENU_BAR_HEIGHT + 10, 'Brush', 'B', self.brush_button_clicked)
         self.buttons[Tools.BRUSH] = brush_button
 
@@ -122,11 +123,24 @@ class VanillaWindow(QMainWindow):
                                              self.triangle_button_clicked)
         self.buttons[Tools.TRIANGLE] = triangle_button
 
-        test = self.create_button(100, 100, '', '', self.add_layer)
-
         width = QDesktopWidget().width()
         height = QDesktopWidget().height() - 64
         size = 20
+
+        self.layer_button_left = width - 220
+
+        self.add_layer_button = QPushButton('Add Layer', self)
+        self.add_layer_button.setGeometry(self.layer_button_left + 24, self.TOOLBAR_HEIGHT - 15, 150, 30)
+        self.add_layer_button.clicked.connect(self.add_layer)
+        self.add_layer_button.setFont(QFont('Arial', 14))
+        self.add_layer_button.show()
+
+        self.layers_label = QLabel('Layers', self)
+        self.layers_label.setFont(QFont('Arial', 20))
+        self.layers_label.setStyleSheet('color: lightGray;')
+        self.layers_label.setGeometry(self.layer_button_left, 25, 197, 60)
+        self.layers_label.setAlignment(Qt.AlignCenter)
+        self.layers_label.show()
 
         self.vertical_scrollbar = QScrollBar(self)
         self.vertical_scrollbar.setGeometry(width - size, 0, size, height - size)
@@ -217,17 +231,20 @@ class VanillaWindow(QMainWindow):
 
     def create_layer_button(self, x, y, name, layer_number):
         button = QPushButton(name, self)
-        button.setGeometry(x, y, 100, 30)
+        button.setGeometry(x, y, 187, 100)
         button.clicked.connect(lambda: self.canvas.change_layer(layer_number))
         button.show()
 
     def update_layers_buttons(self):
-        x = self.width() - 130
+        x = self.layer_button_left + 5
         for i in range(len(self.canvas.layers)):
             layer = self.canvas.layers[i]
-            self.create_layer_button(x, 30 + i * 40, layer.name, i)
+            self.create_layer_button(x, 90 + i * 105, layer.name, i)
 
     def add_layer(self):
+        if len(self.canvas.layers) == 6:
+            self.add_layer_button.setDisabled(True)
+            return
         self.canvas.add_layer()
         self.update_layers_buttons()
 
