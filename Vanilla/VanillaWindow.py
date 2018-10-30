@@ -249,6 +249,8 @@ class VanillaWindow(QMainWindow):
         self.layer_tables.remove(layer_table)
         self.update_canvas()
         self.update_layers_buttons()
+        if len(self.canvas.layers) == 5:
+            self.add_layer_button.setDisabled(False)
         self.update()
 
     def update_layers_buttons(self):
@@ -262,11 +264,11 @@ class VanillaWindow(QMainWindow):
             self.layer_tables.append(LayerTable(x, 90 + i * 105, layer, btn, self))
 
     def add_layer(self):
+        self.canvas.add_layer()
         if len(self.canvas.layers) == 6:
             self.add_layer_button.setDisabled(True)
-            return
-        self.canvas.add_layer()
         self.update_layers_buttons()
+        self.update()
 
     def eraser_button_clicked(self):
         self.canvas.choose_eraser()
@@ -752,6 +754,15 @@ class VanillaWindow(QMainWindow):
     def draw_pixels(self, painter):
         painter.drawImage(self.canvas_left_side, self.canvas_upper_side,
                           self.canvas_as_image.scaled(self.canvas_width, self.canvas_height))
+        painter.setBrush(Qt.transparent)
+        black_pen = QPen(QColor(0, 0, 0))
+        black_pen.setWidth(3)
+        painter.setPen(black_pen)
+        painter.drawRect(self.canvas_left_side, self.canvas_upper_side, self.canvas_width, self.canvas_height)
+        painter.setPen(Qt.black)
+        self.draw_grid(painter)
+
+    def draw_grid(self, painter):
         if self.pixel_size > 10:
             for i in range(self.canvas.width + 1):
                 x = self.canvas_left_side + i * self.pixel_size
@@ -776,7 +787,7 @@ class VanillaWindow(QMainWindow):
             return
         painter.setBrush(Qt.white)
         table = self.layer_tables[self.canvas.current_layer]
-        painter.drawRect(table.x, table.y, LayerTable.WIDTH, LayerTable.HEIGHT)
+        painter.drawRect(table.x - 1, table.y - 1, LayerTable.WIDTH + 2, LayerTable.HEIGHT + 2)
 
     def draw_buttons(self, painter):
         painter.setPen(Qt.transparent)

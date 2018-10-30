@@ -49,8 +49,10 @@ class LayerTable:
         self.name_edit.close()
 
     def draw(self, painter):
-        painter.setPen(Qt.black)
+        painter.setPen(Qt.transparent)
+        painter.setBrush(Qt.transparent)
         painter.drawImage(self.x, self.y, self.background)
+        painter.setPen(Qt.black)
         painter.setFont(QFont('Arial', 12))
         painter.drawText(self.x, self.y + self.HEIGHT / 4, self.WIDTH, self.HEIGHT / 2, Qt.AlignCenter,
                          f'Mode: {"Greyscale" if self.layer.greyscale else "RGB"}\n'
