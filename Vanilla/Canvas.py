@@ -279,3 +279,38 @@ class Canvas:
 
     def change_layer_name(self, layer, name):
         self.layers[layer].name = name
+
+    @staticmethod
+    def turn_right(x, y, width, height, x_shift, y_shift):
+        new_x = -y + (width + height) // 2 - 1 + x_shift
+        new_y = x - (width - height) // 2 + y_shift
+        return new_x, new_y
+
+    @staticmethod
+    def turn_left(x, y, width, height, x_shift, y_shift):
+        new_x = y + (width - height) // 2 + x_shift
+        new_y = -x + (width + height) // 2 - 1 + y_shift
+        return new_x, new_y
+
+    def turn_selection(self, turn_function):
+        width = self.selection_edges[2] - self.selection_edges[0] + 1
+        height = self.selection_edges[3] - self.selection_edges[1]
+        changes = []
+        x_shift = self.selection_edges[0]
+        y_shift = self.selection_edges[1]
+        for x in range(width):
+            for y in range(height):
+                pixel = self.active_layer.pixels[x_shift + x][y_shift + y]
+                new_x, new_y = turn_function(x, y, width, height, x_shift, y_shift)
+                changes.append((new_x, new_y, pixel))
+        self.delete_selection()
+        self.selection_is_on = False
+        for change in changes:
+            if 0 <= change[0] < self.width and 0 <= change[1] < self.height:
+                self.paint_pixel(*change)
+
+    def turn_selection_right(self):
+        self.turn_selection(self.turn_right)
+
+    def turn_selection_left(self):
+        self.turn_selection(self.turn_left)

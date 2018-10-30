@@ -125,6 +125,10 @@ class VanillaWindow(QMainWindow):
                                              self.triangle_button_clicked)
         self.buttons[Tools.TRIANGLE] = triangle_button
 
+        test = self.create_button(100, 100, '', '', self.turn_selection_right)
+
+        test = self.create_button(200, 100, '', '', self.turn_selection_left)
+
         width = QDesktopWidget().width()
         height = QDesktopWidget().height() - 64
         size = 20
@@ -231,6 +235,20 @@ class VanillaWindow(QMainWindow):
         button.show()
         return button
 
+    def turn_selection_right(self):
+        self.turn_selection(self.canvas.turn_selection_right)
+
+    def turn_selection_left(self):
+        self.turn_selection(self.canvas.turn_selection_left)
+
+    def turn_selection(self, turn_function):
+        if not self.canvas.selection_is_on:
+            return
+        turn_function()
+        self.to_draw_selection = False
+        self.update_canvas()
+        self.update()
+
     def create_layer_button(self, x, y, layer_number):
         button = QPushButton('', self)
         button.setGeometry(x, y, 187, 100)
@@ -328,7 +346,7 @@ class VanillaWindow(QMainWindow):
         self.canvas.deselect()
         self.shape_start = 0, 0
         self.cursor_position = self.canvas.width - 1, self.canvas.height - 1
-        self.get_selection_position()
+        self.update_selection_position()
         self.canvas.select(*self.shape_start, *self.cursor_position)
         self.to_draw_selection = True
         self.deselect_action.setDisabled(False)
@@ -534,7 +552,7 @@ class VanillaWindow(QMainWindow):
         if self.canvas.current_tool in [Tools.BRUSH, Tools.ERASER]:
             self.canvas.paint(*self.cursor_position)
         if self.cursor_on_canvas and self.canvas.current_tool == Tools.SELECTION:
-            self.get_selection_position()
+            self.update_selection_position()
 
     def update_canvas(self):
         if not self.to_draw_canvas:
@@ -701,7 +719,7 @@ class VanillaWindow(QMainWindow):
         up = min(start_y, end_y)
         painter.drawEllipse(left, up, abs(end_x - start_x), abs(end_y - start_y))
 
-    def get_selection_position(self):
+    def update_selection_position(self):
         start_x = self.shape_start[0] * self.pixel_size + self.canvas_left_side
         start_y = self.shape_start[1] * self.pixel_size + self.canvas_upper_side
         end_x = self.cursor_position[0] * self.pixel_size + self.canvas_left_side
