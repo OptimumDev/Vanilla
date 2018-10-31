@@ -19,6 +19,7 @@ class VanillaWindow(QMainWindow):
     TOOLBAR_WIDTH = 389
     BUTTON_SIZE = 64
     MENU_BAR_HEIGHT = 30
+    BUTTON_SHIFT = 20
     MINIMUM_CANVAS_LEFT_SHIFT = 250
 
     def __init__(self):
@@ -124,12 +125,12 @@ class VanillaWindow(QMainWindow):
         self.show()
 
     def create_buttons(self):
-        left = 20
+        left = 25
 
-        brush_button = self.create_button(left, self.MENU_BAR_HEIGHT + 10, 'Brush', 'B', self.brush_button_clicked)
+        brush_button = self.create_button(left, self.MENU_BAR_HEIGHT + 20, 'Brush', 'B', self.brush_button_clicked)
         self.buttons[Tools.BRUSH] = brush_button
 
-        right = brush_button.x() + brush_button.width() + self.MENU_BAR_HEIGHT
+        right = brush_button.x() + brush_button.width() + self.BUTTON_SHIFT
 
         eraser_button = self.create_button(right, brush_button.y(), 'Eraser', 'E', self.eraser_button_clicked)
         self.buttons[Tools.ERASER] = eraser_button
@@ -159,6 +160,12 @@ class VanillaWindow(QMainWindow):
                                                self.turn_selection_right)
         left_turn_button = self.create_button(right, right_turn_button.y(), 'Turn Left', 'Ctrl+L',
                                               self.turn_selection_left)
+
+        flip_horizontally_button =  self.create_button(left, self.get_button_shift(right_turn_button),
+                                                       'Flip Horizontally', 'Ctrl+H', lambda: None)
+
+        flip_vertically_button = self.create_button(right, flip_horizontally_button.y(), 'Flip Vertically', 'Ctrl+F',
+                                                    lambda: None)
 
     def create_menu_bar(self):
         self.menu_bar = self.menuBar()
@@ -238,7 +245,7 @@ class VanillaWindow(QMainWindow):
         return button
 
     def get_button_shift(self, upper_button):
-        return upper_button.y() + upper_button.height() + self.MENU_BAR_HEIGHT
+        return upper_button.y() + upper_button.height() + self.BUTTON_SHIFT
 
     def turn_selection_right(self):
         self.turn_selection(self.canvas.turn_selection_right)
