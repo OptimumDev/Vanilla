@@ -92,42 +92,7 @@ class VanillaWindow(QMainWindow):
                                     self.size_slider.width() + self.size_edit.width() + 5, 30)
         self.size_label.show()
 
-
-        brush_button = self.create_button(20, self.MENU_BAR_HEIGHT + 10, 'Brush', 'B', self.brush_button_clicked)
-        self.buttons[Tools.BRUSH] = brush_button
-
-        eraser_button = self.create_button(brush_button.x() + brush_button.width() + self.MENU_BAR_HEIGHT,
-                                           brush_button.y(), 'Eraser', 'E', self.eraser_button_clicked)
-        self.buttons[Tools.ERASER] = eraser_button
-
-        fill_button = self.create_button(brush_button.x(),
-                                         brush_button.y() + brush_button.height() + self.MENU_BAR_HEIGHT, 'Fill', 'F',
-                                         self.fill_button_pressed)
-        self.buttons[Tools.FILL] = fill_button
-
-        selection_button = self.create_button(eraser_button.x(), fill_button.y(), 'Selection', 'S',
-                                              self.selection_button_clicked)
-        self.buttons[Tools.SELECTION] = selection_button
-
-        line_button = self.create_button(20, 300, 'Line', 'L', self.line_button_clicked)
-        self.buttons[Tools.LINE] = line_button
-
-        rectangle_button = self.create_button(line_button.x() + line_button.width() + self.MENU_BAR_HEIGHT,
-                                           line_button.y(), 'Rectangle', 'R', self.rectangle_button_clicked)
-        self.buttons[Tools.SQUARE] = rectangle_button
-
-        ellipse_button = self.create_button(line_button.x(),
-                                            line_button.y() + line_button.height() + self.MENU_BAR_HEIGHT, 'Ellipse',
-                                            'C', self.ellipse_button_clicked)
-        self.buttons[Tools.CIRCLE] = ellipse_button
-
-        triangle_button = self.create_button(rectangle_button.x(), ellipse_button.y(), 'Triangle', 'T',
-                                             self.triangle_button_clicked)
-        self.buttons[Tools.TRIANGLE] = triangle_button
-
-        test = self.create_button(100, 100, '', '', self.turn_selection_right)
-
-        test = self.create_button(200, 100, '', '', self.turn_selection_left)
+        self.create_buttons()
 
         width = QDesktopWidget().width()
         height = QDesktopWidget().height() - 64
@@ -157,6 +122,43 @@ class VanillaWindow(QMainWindow):
         self.horizontal_scrollbar.valueChanged[int].connect(self.horizontal_scrollbar_value_changed)
 
         self.show()
+
+    def create_buttons(self):
+        left = 20
+
+        brush_button = self.create_button(left, self.MENU_BAR_HEIGHT + 10, 'Brush', 'B', self.brush_button_clicked)
+        self.buttons[Tools.BRUSH] = brush_button
+
+        right = brush_button.x() + brush_button.width() + self.MENU_BAR_HEIGHT
+
+        eraser_button = self.create_button(right, brush_button.y(), 'Eraser', 'E', self.eraser_button_clicked)
+        self.buttons[Tools.ERASER] = eraser_button
+
+        fill_button = self.create_button(left, self.get_button_shift(brush_button), 'Fill', 'F',
+                                         self.fill_button_pressed)
+        self.buttons[Tools.FILL] = fill_button
+
+        selection_button = self.create_button(right, fill_button.y(), 'Selection', 'S', self.selection_button_clicked)
+        self.buttons[Tools.SELECTION] = selection_button
+
+        line_button = self.create_button(left, self.get_button_shift(fill_button), 'Line', 'L',
+                                         self.line_button_clicked)
+        self.buttons[Tools.LINE] = line_button
+
+        rectangle_button = self.create_button(right, line_button.y(), 'Rectangle', 'R', self.rectangle_button_clicked)
+        self.buttons[Tools.SQUARE] = rectangle_button
+
+        ellipse_button = self.create_button(left, self.get_button_shift(line_button), 'Ellipse', 'C',
+                                            self.ellipse_button_clicked)
+        self.buttons[Tools.CIRCLE] = ellipse_button
+
+        triangle_button = self.create_button(right, ellipse_button.y(), 'Triangle', 'T', self.triangle_button_clicked)
+        self.buttons[Tools.TRIANGLE] = triangle_button
+
+        right_turn_button = self.create_button(left, self.get_button_shift(ellipse_button), 'Turn Right', 'Ctrl+R',
+                                               self.turn_selection_right)
+        left_turn_button = self.create_button(right, right_turn_button.y(), 'Turn Left', 'Ctrl+L',
+                                              self.turn_selection_left)
 
     def create_menu_bar(self):
         self.menu_bar = self.menuBar()
@@ -234,6 +236,9 @@ class VanillaWindow(QMainWindow):
         self.button_images[button] = QImage(f'images/{image}.png')
         button.show()
         return button
+
+    def get_button_shift(self, upper_button):
+        return upper_button.y() + upper_button.height() + self.MENU_BAR_HEIGHT
 
     def turn_selection_right(self):
         self.turn_selection(self.canvas.turn_selection_right)
