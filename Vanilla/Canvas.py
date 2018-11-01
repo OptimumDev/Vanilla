@@ -314,3 +314,20 @@ class Canvas:
 
     def turn_selection_left(self):
         self.turn_selection(self.turn_left)
+
+    def flip_horizontally(self):
+        flip_image = [self.pixels[x][self.selection_edges[1]:self.selection_edges[3]]
+                      for x in range(self.selection_edges[0], self.selection_edges[2] + 1)]
+        flip_image.reverse()
+        for x in range(len(flip_image)):
+            for y in range(len(flip_image[0])):
+                self.paint_pixel(self.selection_edges[0] + x, self.selection_edges[1] + y, flip_image[x][y])
+
+    def flip_vertically(self):
+        flip_image = [self.pixels[x][self.selection_edges[1]:self.selection_edges[3]]
+                      for x in range(self.selection_edges[0], self.selection_edges[2] + 1)]
+        for x in range(len(flip_image)):
+            flip_image[x].reverse()
+        for x in range(len(flip_image)):
+            for y in range(len(flip_image[0])):
+                self.paint_pixel(self.selection_edges[0] + x, self.selection_edges[1] + y, flip_image[x][y])

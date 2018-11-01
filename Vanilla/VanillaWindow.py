@@ -162,10 +162,10 @@ class VanillaWindow(QMainWindow):
                                               self.turn_selection_left)
 
         flip_horizontally_button =  self.create_button(left, self.get_button_shift(right_turn_button),
-                                                       'Flip Horizontally', 'Ctrl+H', lambda: None)
+                                                       'Flip Horizontally', 'Ctrl+H', self.flip_horizontally)
 
         flip_vertically_button = self.create_button(right, flip_horizontally_button.y(), 'Flip Vertically', 'Ctrl+F',
-                                                    lambda: None)
+                                                    self.flip_vertically)
 
     def create_menu_bar(self):
         self.menu_bar = self.menuBar()
@@ -243,6 +243,20 @@ class VanillaWindow(QMainWindow):
         self.button_images[button] = QImage(f'images/{image}.png')
         button.show()
         return button
+
+    def flip(self, flip_function):
+        if not self.canvas.selection_is_on:
+            return
+        flip_function()
+        self.to_draw_selection = False
+        self.update_canvas()
+        self.update()
+
+    def flip_horizontally(self):
+        self.flip(self.canvas.flip_horizontally)
+
+    def flip_vertically(self):
+        self.flip(self.canvas.flip_vertically)
 
     def get_button_shift(self, upper_button):
         return upper_button.y() + upper_button.height() + self.BUTTON_SHIFT
