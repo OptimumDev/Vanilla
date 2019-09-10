@@ -1,7 +1,7 @@
 # Vanilla
 Simple Python pixel graphic designer
 
-Was made for universty course  
+Was made for University course  
 Uses PyQt5 for GUI  
 All pictures are drawn by me
 
